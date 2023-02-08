@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryAPI", "LibraryAPI\LibraryAPI.csproj", "{7CA74E77-8DAC-4156-8200-2A95B8E0BCB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryAPI", "LibraryAPI\LibraryAPI.csproj", "{7CA74E77-8DAC-4156-8200-2A95B8E0BCB0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryCL", "LibraryCL\LibraryCL.csproj", "{DDBAA106-DB18-4EF2-863A-B20557E78229}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{7CA74E77-8DAC-4156-8200-2A95B8E0BCB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7CA74E77-8DAC-4156-8200-2A95B8E0BCB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7CA74E77-8DAC-4156-8200-2A95B8E0BCB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDBAA106-DB18-4EF2-863A-B20557E78229}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDBAA106-DB18-4EF2-863A-B20557E78229}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDBAA106-DB18-4EF2-863A-B20557E78229}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDBAA106-DB18-4EF2-863A-B20557E78229}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
