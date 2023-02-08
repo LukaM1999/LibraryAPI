@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LibraryCL
+namespace LibraryCL.Model
 {
-    public class Entity
+    public abstract class EntityBase
     {
         public int Id { get; set; }
     }

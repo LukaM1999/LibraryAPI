@@ -1,4 +1,9 @@
+using LibraryAPI.Services;
+using LibraryAPI.Services.Implementation;
 using LibraryCL;
+using LibraryCL.Model;
+using LibraryCL.Repository;
+using LibraryCL.Repository.Implementation;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -14,6 +19,11 @@ builder.Services.AddDbContext<LibraryDbContext>(options =>
     assembly => assembly.MigrationsAssembly(typeof(LibraryDbContext).Assembly.FullName)).UseLazyLoadingProxies();
 });
 
+builder.Services.AddScoped<DbContext, LibraryDbContext>();
+
+builder.Services.AddScoped<IGenericDbRepository<User>, GenericDbRepository<User>>();
+builder.Services.AddScoped<IUserService, UserService>();
+
 
 var app = builder.Build();
 
@@ -25,37 +35,3 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateTime.Now.AddDays(index),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
-
-app.MapGet("/swaggerTest", [SwaggerOperation(summary:"Returns a swagger test string", 
-                            description:"This is an endpoint used to test the swagger documentation")] () =>
-{
-    return "Swagger test endpoint";
-})
-.WithName("GetSwaggerTest");
-
-app.Run();
-
-internal record WeatherForecast(DateTime Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

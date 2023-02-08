@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LibraryCL.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryCL
@@ -17,10 +18,16 @@ namespace LibraryCL
         {
         }
 
-        private DbSet<Entity> _entities;
+        private DbSet<User> _users;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>(user =>
+            {
+                user.HasData(
+                    new { Id = 1, Email = "email@mail.com" }
+                    );
+            });
         }
     }
 }
