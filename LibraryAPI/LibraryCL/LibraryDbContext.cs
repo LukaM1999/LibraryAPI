@@ -25,8 +25,11 @@ namespace LibraryCL
             modelBuilder.Entity<User>(user =>
             {
                 user.HasData(
-                    new { Id = 1, Email = "email@mail.com" }
-                    );
+                    new { Id = 1, Email = "email@mail.com", 
+                        Password = "SecurePass123!", Role = "User", 
+                        CreatedDate = DateTime.Now, ModifiedDate = DateTime.Now 
+                    }
+                );
             });
         }
     }
