@@ -5,16 +5,16 @@ namespace LibraryAPI.Services.Implementation
 {
     public class UserService : IUserService
     {
-        private readonly IGenericDbRepository<User> _userRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UserService(IGenericDbRepository<User> userRepository)
+        public UserService(IUnitOfWork unitOfWork)
         {
-            _userRepository = userRepository;
+            _unitOfWork= unitOfWork;
         }
 
         public async Task<User?> GetUserById(int id)
         {
-            return await _userRepository.GetById(id);
+            return await _unitOfWork.UserRepository.GetById(id);
         }
     }
 }

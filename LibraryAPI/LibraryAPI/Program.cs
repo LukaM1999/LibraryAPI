@@ -21,7 +21,7 @@ builder.Services.AddDbContext<LibraryDbContext>(options =>
 });
 
 builder.Services.AddScoped<DbContext, LibraryDbContext>();
-builder.Services.AddScoped(typeof(IGenericDbRepository<>), typeof(GenericDbRepository<>));
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 
