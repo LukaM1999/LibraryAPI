@@ -1,4 +1,5 @@
-﻿using LibraryCL.Model;
+﻿using LibraryAPI.DTO;
+using LibraryCL.Model;
 using LibraryCL.Repository;
 
 namespace LibraryAPI.Services.Implementation
@@ -18,6 +19,11 @@ namespace LibraryAPI.Services.Implementation
         {
             _logger.LogInformation("Getting user with id: {id}", id);
             return await _unitOfWork.UserRepository.GetById(id);
+        }
+
+        public async Task RegisterUser(UserRegistrationDTO userRegistrationDto)
+        {
+            await Task.CompletedTask;
         }
     }
 }
