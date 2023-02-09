@@ -4,6 +4,7 @@ using LibraryCL;
 using LibraryCL.Model;
 using LibraryCL.Repository;
 using LibraryCL.Repository.Implementation;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -20,9 +21,9 @@ builder.Services.AddDbContext<LibraryDbContext>(options =>
 });
 
 builder.Services.AddScoped<DbContext, LibraryDbContext>();
-
-builder.Services.AddScoped<IGenericDbRepository<User>, GenericDbRepository<User>>();
+builder.Services.AddScoped(typeof(IGenericDbRepository<>), typeof(GenericDbRepository<>));
 builder.Services.AddScoped<IUserService, UserService>();
+
 
 
 var app = builder.Build();
@@ -35,3 +36,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.Run();
