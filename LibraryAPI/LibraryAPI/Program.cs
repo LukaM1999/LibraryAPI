@@ -1,13 +1,13 @@
+using FluentValidation;
+using LibraryAPI.API;
+using LibraryAPI.DTO;
 using LibraryAPI.Services;
 using LibraryAPI.Services.Implementation;
+using LibraryAPI.Validators;
 using LibraryCL;
-using LibraryCL.Model;
 using LibraryCL.Repository;
 using LibraryCL.Repository.Implementation;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.Console;
-using Swashbuckle.AspNetCore.Annotations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +25,8 @@ builder.Services.AddScoped<DbContext, LibraryDbContext>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserService, UserService>();
 
+builder.Services.AddSingleton<IValidator<UserRegistrationDTO>, UserRegistrationValidator>();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
 var app = builder.Build();
@@ -38,6 +40,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseHttpLogging();
+
 app.Logger.LogInformation("Running application...");
+
+app.RegisterUserAPI(app.Logger);
 
 app.Run();
