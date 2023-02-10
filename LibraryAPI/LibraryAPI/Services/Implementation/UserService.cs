@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
-using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 using LibraryAPI.DTO;
 using LibraryAPI.Security;
 using LibraryCL.Model;
 using LibraryCL.Repository;
-using System.Linq.Expressions;
 
 namespace LibraryAPI.Services.Implementation
 {
@@ -37,9 +35,9 @@ namespace LibraryAPI.Services.Implementation
                 _logger.LogInformation("Hashing provided password");
                 user.Password = Hasher.HashPassword(userRegistrationDto.Password);
             }
-            catch (ArgumentNullException exception)
+            catch (ArgumentNullException)
             {
-                _logger.LogError("Provided password can't be null or empty");
+                _logger.LogWarning("Provided password can't be null or empty");
             }
             _logger.LogInformation("Creating user");
             await _unitOfWork.UserRepository.Create(user);

@@ -19,7 +19,7 @@ namespace LibraryAPI.API
                 var validationResult = await validator.ValidateAsync(userRegistrationDto);
                 if (!validationResult.IsValid)
                 {
-                    logger.LogError("Validation of the user registration request failed");
+                    logger.LogWarning("Validation of the user registration request failed");
                     return Results.ValidationProblem(validationResult.ToDictionary(),
                     statusCode: (int)HttpStatusCode.BadRequest);
                 }
@@ -30,7 +30,7 @@ namespace LibraryAPI.API
                 }
                 catch (Exception exception)
                 {
-                    logger.LogError("User with email {} already exists", userRegistrationDto.Email);
+                    logger.LogWarning("User with email {} already exists", userRegistrationDto.Email);
                     return Results.Conflict("User with provided email already exists");
                 }
                 return Results.Ok();

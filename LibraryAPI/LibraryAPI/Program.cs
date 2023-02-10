@@ -5,14 +5,9 @@ using LibraryAPI.Services;
 using LibraryAPI.Services.Implementation;
 using LibraryAPI.Validators;
 using LibraryCL;
-using LibraryCL.Model;
 using LibraryCL.Repository;
 using LibraryCL.Repository.Implementation;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.Console;
-using Swashbuckle.AspNetCore.Annotations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +39,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseHttpLogging();
 
 app.Logger.LogInformation("Running application...");
 

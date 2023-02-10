@@ -1,6 +1,4 @@
-﻿using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
-using LibraryCL.Model;
-using System;
+﻿using LibraryCL.Model;
 using System.Linq.Expressions;
 
 namespace LibraryCL.Repository
