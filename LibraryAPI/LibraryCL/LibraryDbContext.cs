@@ -22,6 +22,8 @@ namespace LibraryCL
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>().HasIndex(user => user.Email).IsUnique();
+#if DEBUG
             modelBuilder.Entity<User>(user =>
             {
                 user.HasData(
@@ -31,8 +33,7 @@ namespace LibraryCL
                     }
                 );
             });
-
-            modelBuilder.Entity<User>().HasIndex(user => user.Email).IsUnique();
+#endif
         }
     }
 }

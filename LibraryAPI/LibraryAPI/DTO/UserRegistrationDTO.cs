@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace LibraryAPI.DTO
+﻿namespace LibraryAPI.DTO
 {
     public class UserRegistrationDTO
     {

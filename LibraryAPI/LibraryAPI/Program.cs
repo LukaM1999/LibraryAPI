@@ -47,6 +47,6 @@ app.UseHttpsRedirection();
 
 app.Logger.LogInformation("Running application...");
 
-app.InvokeUserAPI();
+app.RegisterUserAPI(app.Logger);
 
 app.Run();

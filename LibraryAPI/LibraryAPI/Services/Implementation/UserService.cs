@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 using LibraryAPI.DTO;
+using LibraryAPI.Security;
 using LibraryCL.Model;
 using LibraryCL.Repository;
 using System.Linq.Expressions;
@@ -29,8 +30,20 @@ namespace LibraryAPI.Services.Implementation
 
         public async Task RegisterUser(UserRegistrationDTO userRegistrationDto)
         {
+            _logger.LogInformation("Mapping user registration data transfer object to user model");
             User user = _mapper.Map<User>(userRegistrationDto);
+            try
+            {
+                _logger.LogInformation("Hashing provided password");
+                user.Password = Hasher.HashPassword(userRegistrationDto.Password);
+            }
+            catch (ArgumentNullException exception)
+            {
+                _logger.LogError("Provided password can't be null or empty");
+            }
+            _logger.LogInformation("Creating user");
             await _unitOfWork.UserRepository.Create(user);
+            _logger.LogInformation("Saving user");
             await _unitOfWork.Save();
         }
     }

@@ -13,7 +13,7 @@ namespace LibraryCL.Model
     {
         public User() {
             Role = "User";
-            CreatedDate= DateTime.Now;
+            CreatedDate= DateTime.UtcNow;
             ModifiedDate = CreatedDate;
         }
 
