@@ -31,7 +31,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddSingleton<IValidator<UserRegistrationDTO>, UserRegistrationValidator>();
-
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
 var app = builder.Build();

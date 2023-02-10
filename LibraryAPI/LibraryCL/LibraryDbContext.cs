@@ -31,6 +31,8 @@ namespace LibraryCL
                     }
                 );
             });
+
+            modelBuilder.Entity<User>().HasIndex(user => user.Email).IsUnique();
         }
     }
 }

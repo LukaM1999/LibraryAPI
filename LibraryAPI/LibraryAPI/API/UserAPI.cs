@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using LibraryAPI.DTO;
 using LibraryAPI.Services;
+using LibraryCL.Model;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -21,7 +22,7 @@ namespace LibraryAPI.API
                 try
                 {
                     await userService.RegisterUser(userRegistrationDto);
-                } catch (Exception ex)
+                } catch (Exception exception)
                 {
                     return Results.Conflict("User with provided email already exists");
                 }
