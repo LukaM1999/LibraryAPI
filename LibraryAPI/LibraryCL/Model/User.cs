@@ -1,11 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace LibraryCL.Model
 {
-    public class User : EntityBase
+    public class User : IdentityUser
     {
         public User() {
-            Role = "User";
             CreatedDate= DateTime.UtcNow;
             ModifiedDate = CreatedDate;
         }
@@ -15,16 +15,6 @@ namespace LibraryCL.Model
 
         [MaxLength(100)]
         public string? LastName { get; set; }
-
-        [Required]
-        public string Email { get; set; }
-
-        [Required]
-        public string Password { get; set; }
-
-        [Required]
-        [MaxLength(10)]
-        public string Role { get; set; }
 
         public string? Avatar { get; set; }
 

@@ -3,46 +3,80 @@ using LibraryAPI.DTO;
 using LibraryAPI.Security;
 using LibraryCL.Model;
 using LibraryCL.Repository;
+using Microsoft.AspNetCore.Identity;
 
 namespace LibraryAPI.Services.Implementation
 {
     public class UserService : IUserService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger _logger;
         private readonly IMapper _mapper;
+        private readonly UserManager<User> _userManager;
 
-        public UserService(IUnitOfWork unitOfWork, ILogger<UserService> logger, IMapper mapper)
+        public UserService(IMapper mapper, UserManager<User> userManager)
         {
-            _unitOfWork = unitOfWork;
-            _logger = logger;
             _mapper = mapper;
+            _userManager = userManager;
 
         }
 
-        public async Task<User?> GetUserById(int id)
+        public async Task<User?> GetUserById(string id)
         {
-            _logger.LogInformation("Getting user with id: {id}", id);
-            return await _unitOfWork.UserRepository.GetById(id);
+            return await _userManager.FindByIdAsync(id);
         }
 
-        public async Task RegisterUser(UserRegistrationDTO userRegistrationDto)
+        public async Task<IdentityResult> RegisterUser(UserRegistrationDTO userRegistrationDto)
         {
-            _logger.LogInformation("Mapping user registration data transfer object to user model");
             User user = _mapper.Map<User>(userRegistrationDto);
-            try
+
+            var creationResult = await _userManager.CreateAsync(user, userRegistrationDto.Password);
+            if(!creationResult.Succeeded)
             {
-                _logger.LogInformation("Hashing provided password");
-                user.Password = Hasher.HashPassword(userRegistrationDto.Password);
+                return creationResult;
             }
-            catch (ArgumentNullException)
+
+            return await _userManager.AddToRoleAsync(user, Roles.User);
+        }
+
+        public async Task UpgradeUserToLibrarian(string userId)
+        {
+            var user = await GetUserById(userId);
+            if(user == null)
             {
-                _logger.LogWarning("Provided password can't be null or empty");
+                throw new ApplicationException(nameof(user));
             }
-            _logger.LogInformation("Creating user");
-            await _unitOfWork.UserRepository.Create(user);
-            _logger.LogInformation("Saving user");
-            await _unitOfWork.Save();
+
+            var roleRemovalResult = await _userManager.RemoveFromRoleAsync(user, Roles.User);
+            if (!roleRemovalResult.Succeeded)
+            {
+                throw new ApplicationException(nameof(user));
+            }
+
+            var roleAdditionResult = await _userManager.AddToRoleAsync(user, Roles.Librarian);
+            if (!roleAdditionResult.Succeeded)
+            {
+                throw new ApplicationException(nameof(user));
+            }
+        }
+
+        public async Task DowngradeLibrarianToUser(string userId)
+        {
+            var user = await GetUserById(userId);
+            if (user == null)
+            {
+                throw new ApplicationException(nameof(user));
+            }
+
+            var roleRemovalResult = await _userManager.RemoveFromRoleAsync(user, Roles.Librarian);
+            if (!roleRemovalResult.Succeeded)
+            {
+                throw new ApplicationException(nameof(user));
+            }
+
+            var roleAdditionResult = await _userManager.AddToRoleAsync(user, Roles.User);
+            if (!roleAdditionResult.Succeeded)
+            {
+                throw new ApplicationException(nameof(user));
+            }
         }
     }
 }
