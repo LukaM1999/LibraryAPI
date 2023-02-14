@@ -73,6 +73,25 @@ namespace LibraryAPI.API
                 return Results.Ok();
             }).Produces(StatusCodes.Status200OK)
               .Produces(StatusCodes.Status409Conflict);
+
+            webApplication.MapPost("/user/login", async (LoginDTO loginDTO, IUserService userService) =>
+            {
+                logger.LogInformation("Attempting to log in user with email {}", loginDTO.Email);
+
+                LoginResponseDTO tokenDto;
+                try
+                {
+                    tokenDto = await userService.Login(loginDTO);
+                }
+                catch (Exception exception)
+                {
+                    logger.LogWarning("Couldn't login user with email {}. Message: {}", loginDTO.Email, exception);
+                    return Results.Conflict("Couldn't login user with provided login information");
+                }
+
+                return Results.Ok(tokenDto);
+            }).Produces(StatusCodes.Status200OK)
+              .Produces(StatusCodes.Status409Conflict);
         }
     }
 }
