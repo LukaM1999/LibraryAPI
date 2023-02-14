@@ -11,18 +11,6 @@ namespace LibraryCL.Repository.Implementation
             _dbContext = dbContext;
         }
 
-        private GenericDbRepository<User> _userRepository;
-
-        public GenericDbRepository<User> UserRepository
-        {
-            get
-            {
-
-                this._userRepository ??= new GenericDbRepository<User>(_dbContext);
-                return _userRepository;
-            }
-        }
-
         public async Task Save()
         {
             await _dbContext.SaveChangesAsync();

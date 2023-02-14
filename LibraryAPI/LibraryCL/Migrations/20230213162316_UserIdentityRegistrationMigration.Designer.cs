@@ -4,6 +4,7 @@ using LibraryCL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryCL.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
-    partial class LibraryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230213162316_UserIdentityRegistrationMigration")]
+    partial class UserIdentityRegistrationMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -81,6 +83,11 @@ namespace LibraryCL.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -106,53 +113,6 @@ namespace LibraryCL.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "2c6f174e-3b0e-446f-86af-483d56fd7210",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "b54dc860-b817-4829-bcc0-85e47f2ab7fc",
-                            CreatedDate = new DateTime(2023, 2, 14, 8, 27, 25, 289, DateTimeKind.Utc).AddTicks(9774),
-                            Email = "admin@mail.com",
-                            EmailConfirmed = false,
-                            LockoutEnabled = false,
-                            ModifiedDate = new DateTime(2023, 2, 14, 8, 27, 25, 289, DateTimeKind.Utc).AddTicks(9775),
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "0fe11c01-56c2-4fd2-a7d9-66e175045fd8",
-                            TwoFactorEnabled = false,
-                            UserName = "admin@mail.com"
-                        },
-                        new
-                        {
-                            Id = "3b7g174e-3b0e-446f-86af-483d56fd7210",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "6f580666-d8cc-469a-ac86-622dff2dc2a4",
-                            CreatedDate = new DateTime(2023, 2, 14, 8, 27, 25, 289, DateTimeKind.Utc).AddTicks(9780),
-                            Email = "user@mail.com",
-                            EmailConfirmed = false,
-                            LockoutEnabled = false,
-                            ModifiedDate = new DateTime(2023, 2, 14, 8, 27, 25, 289, DateTimeKind.Utc).AddTicks(9781),
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "faf786e8-01f8-47ff-bc5d-49c0ea1aa145",
-                            TwoFactorEnabled = false,
-                            UserName = "user@mail.com"
-                        },
-                        new
-                        {
-                            Id = "4a8h174e-3b0e-446f-86af-483d56fd7210",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "3ad55cc3-6c60-43ea-b72c-103489c3db10",
-                            CreatedDate = new DateTime(2023, 2, 14, 8, 27, 25, 289, DateTimeKind.Utc).AddTicks(9786),
-                            Email = "librarian@mail.com",
-                            EmailConfirmed = false,
-                            LockoutEnabled = false,
-                            ModifiedDate = new DateTime(2023, 2, 14, 8, 27, 25, 289, DateTimeKind.Utc).AddTicks(9786),
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "7c8c6866-e867-4496-9b02-84a547de4b7a",
-                            TwoFactorEnabled = false,
-                            UserName = "librarian@mail.com"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -180,29 +140,6 @@ namespace LibraryCL.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "2c5e174e-3b0e-446f-86af-483d56fd7210",
-                            ConcurrencyStamp = "021fafd0-d5e1-4181-9431-72b4b19f938f",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = "3b5e174e-3b0e-446f-86af-483d56fd7210",
-                            ConcurrencyStamp = "478ba257-465b-457b-9eca-77e038ea5ce7",
-                            Name = "User",
-                            NormalizedName = "USER"
-                        },
-                        new
-                        {
-                            Id = "4a5e174e-3b0e-446f-86af-483d56fd7210",
-                            ConcurrencyStamp = "e5a240ff-1f81-483d-a1cc-f52c8ce60454",
-                            Name = "Librarian",
-                            NormalizedName = "LIBRARIAN"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -290,23 +227,6 @@ namespace LibraryCL.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = "2c6f174e-3b0e-446f-86af-483d56fd7210",
-                            RoleId = "2c5e174e-3b0e-446f-86af-483d56fd7210"
-                        },
-                        new
-                        {
-                            UserId = "3b7g174e-3b0e-446f-86af-483d56fd7210",
-                            RoleId = "3b5e174e-3b0e-446f-86af-483d56fd7210"
-                        },
-                        new
-                        {
-                            UserId = "4a8h174e-3b0e-446f-86af-483d56fd7210",
-                            RoleId = "4a5e174e-3b0e-446f-86af-483d56fd7210"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
