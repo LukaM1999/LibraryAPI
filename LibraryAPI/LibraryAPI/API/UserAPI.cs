@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using LibraryAPI.DTO;
+using LibraryAPI.Exceptions;
 using LibraryAPI.Services;
 using System.Net;
 
@@ -47,7 +48,7 @@ namespace LibraryAPI.API
                 {
                     await userService.UpgradeUserToLibrarian(userId);
                 }
-                catch (ApplicationException exception)
+                catch (Exception exception)
                 {
                     logger.LogWarning("Couldn't upgrade user with id {} to Librarian. Message: {}", userId, exception);
                     return Results.Conflict("Couldn't upgrade user with provided id to Librarian");
@@ -63,7 +64,7 @@ namespace LibraryAPI.API
                 {
                     await userService.DowngradeLibrarianToUser(userId);
                 }
-                catch (ApplicationException exception)
+                catch (Exception exception)
                 {
                     logger.LogWarning("Couldn't downgrade user with id {} to User role. Message: {}", userId, exception);
                     return Results.Conflict("Couldn't downgrade user with provided id to User role");

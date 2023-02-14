@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LibraryAPI.DTO;
+using LibraryAPI.Exceptions;
 using LibraryAPI.Security;
 using LibraryCL.Model;
 using LibraryCL.Repository;
@@ -42,19 +43,19 @@ namespace LibraryAPI.Services.Implementation
             var user = await GetUserById(userId);
             if(user == null)
             {
-                throw new ApplicationException(nameof(user));
+                throw new UserNotFoundException(nameof(user));
             }
 
             var roleRemovalResult = await _userManager.RemoveFromRoleAsync(user, Roles.User);
             if (!roleRemovalResult.Succeeded)
             {
-                throw new ApplicationException(nameof(user));
+                throw new RoleRemovalException(nameof(user));
             }
 
             var roleAdditionResult = await _userManager.AddToRoleAsync(user, Roles.Librarian);
             if (!roleAdditionResult.Succeeded)
             {
-                throw new ApplicationException(nameof(user));
+                throw new RoleAdditionException(nameof(user));
             }
         }
 
@@ -63,19 +64,19 @@ namespace LibraryAPI.Services.Implementation
             var user = await GetUserById(userId);
             if (user == null)
             {
-                throw new ApplicationException(nameof(user));
+                throw new UserNotFoundException(nameof(user));
             }
 
             var roleRemovalResult = await _userManager.RemoveFromRoleAsync(user, Roles.Librarian);
             if (!roleRemovalResult.Succeeded)
             {
-                throw new ApplicationException(nameof(user));
+                throw new RoleRemovalException(nameof(user));
             }
 
             var roleAdditionResult = await _userManager.AddToRoleAsync(user, Roles.User);
             if (!roleAdditionResult.Succeeded)
             {
-                throw new ApplicationException(nameof(user));
+                throw new RoleAdditionException(nameof(user));
             }
         }
     }
