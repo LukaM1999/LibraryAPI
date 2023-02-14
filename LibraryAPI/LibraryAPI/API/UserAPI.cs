@@ -2,6 +2,7 @@
 using LibraryAPI.DTO;
 using LibraryAPI.Exceptions;
 using LibraryAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using System.Net;
 
 namespace LibraryAPI.API
