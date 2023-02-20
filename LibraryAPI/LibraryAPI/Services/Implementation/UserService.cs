@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using LibraryAPI.DTO;
 using LibraryAPI.Exceptions;
-using LibraryAPI.Security;
+using LibraryAPI.Options;
 using LibraryCL.Model;
-using LibraryCL.Repository;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -16,14 +16,13 @@ namespace LibraryAPI.Services.Implementation
     {
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
-        private readonly IConfiguration _configuration;
+        private readonly JWTOptions _jwtOptions;
 
-        public UserService(IMapper mapper, UserManager<User> userManager, IConfiguration configuration)
+        public UserService(IMapper mapper, UserManager<User> userManager, IOptions<JWTOptions> jwtOptions)
         {
             _mapper = mapper;
             _userManager = userManager;
-            _configuration = configuration;
-
+            _jwtOptions = jwtOptions.Value;
         }
 
         public async Task<User?> GetUserById(string id)
@@ -124,11 +123,11 @@ namespace LibraryAPI.Services.Implementation
 
         private JwtSecurityToken GetToken(List<Claim> authClaims)
         {
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Secret));
 
             var token = new JwtSecurityToken(
-                issuer: _configuration["JWT:ValidIssuer"],
-                audience: _configuration["JWT:ValidAudience"],
+                issuer: _jwtOptions.ValidIssuer,
+                audience: _jwtOptions.ValidAudience,
                 expires: DateTime.UtcNow.AddMinutes(30),
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)

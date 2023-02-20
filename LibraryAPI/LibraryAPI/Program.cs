@@ -1,6 +1,7 @@
 using FluentValidation;
 using LibraryAPI.API;
 using LibraryAPI.DTO;
+using LibraryAPI.Options;
 using LibraryAPI.Services;
 using LibraryAPI.Services.Implementation;
 using LibraryAPI.Validators;
@@ -54,6 +55,12 @@ builder.Services.AddDbContext<LibraryDbContext>(options =>
     assembly => assembly.MigrationsAssembly(typeof(LibraryDbContext).Assembly.FullName)).UseLazyLoadingProxies();
 });
 
+builder.Services.Configure<JWTOptions>(
+    builder.Configuration.GetSection(JWTOptions.JWT));
+
+var jwtOptions = builder.Configuration.GetSection(JWTOptions.JWT)
+                                                     .Get<JWTOptions>();
+
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<LibraryDbContext>()
     .AddDefaultTokenProviders();
@@ -80,9 +87,9 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidAudience = builder.Configuration["JWT:ValidAudience"],
-        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+        ValidAudience = jwtOptions.ValidAudience,
+        ValidIssuer = jwtOptions.ValidIssuer,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret))
     };
 });
 
