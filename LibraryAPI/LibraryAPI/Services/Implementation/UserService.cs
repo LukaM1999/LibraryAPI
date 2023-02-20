@@ -85,6 +85,17 @@ namespace LibraryAPI.Services.Implementation
             }
         }
 
+        public async Task UpdateBasicInformation(User user, UpdateUserBasicDTO updateUserDTO)
+        {
+            user.FirstName = updateUserDTO.FirstName;
+            user.LastName = updateUserDTO.LastName;
+
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded) {
+                throw new UserUpdateException(nameof(user));
+            }
+        }
+
         public async Task<LoginResponseDTO> Login(LoginDTO loginDTO)
         {
             var user = await _userManager.FindByEmailAsync(loginDTO.Email);

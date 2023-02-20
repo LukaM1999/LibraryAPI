@@ -11,5 +11,6 @@ namespace LibraryAPI.Services
         Task UpgradeUserToLibrarian(string userId);
         Task DowngradeLibrarianToUser(string userId);
         Task<LoginResponseDTO> Login(LoginDTO loginDTO);
+        Task UpdateBasicInformation(User user, UpdateUserBasicDTO updateUserDTO);
     }
 }

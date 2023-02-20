@@ -1,9 +1,13 @@
 ﻿using FluentValidation;
 using LibraryAPI.DTO;
 using LibraryAPI.Services;
+using LibraryCL.Model;
 using LibraryCL.Security;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using System.Net;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace LibraryAPI.API
 {
@@ -72,6 +76,38 @@ namespace LibraryAPI.API
                 }
                 return Results.Ok();
             }).Produces(StatusCodes.Status200OK)
+              .Produces(StatusCodes.Status409Conflict);
+
+            webApplication.MapPut("/user/basicInformation", [Authorize] async (UpdateUserBasicDTO userDto, IHttpContextAccessor httpContextAccessor, IUserService userService) =>
+            {
+                logger.LogInformation("Updating basic user information: {}", JsonSerializer.Serialize(userDto));
+
+                var userId = httpContextAccessor.HttpContext?.User?.FindFirst("UserId")?.Value;
+                if(userId == null)
+                {
+                    logger.LogWarning("Current user not found: {}", JsonSerializer.Serialize(userDto));
+                    return Results.Conflict("Couldn't update basic user information");
+                }
+
+                User? user = await userService.GetUserById(userId);
+                if(user == null)
+                {
+                    logger.LogWarning("User not found with id: {}", userId);
+                    return Results.Conflict("Couldn't update basic user information");
+                }
+
+                try
+                {
+                    await userService.UpdateBasicInformation(user, userDto);
+                } catch (Exception exception)
+                {
+                    logger.LogWarning("Couldn't update user with id: {} and information: {}. Message: {}", userId, JsonSerializer.Serialize(userDto), exception.Message);
+                    return Results.Conflict("Couldn't update basic user information");
+                }
+
+                logger.LogInformation("User with id: {} successfully updated with information: {}", userId, JsonSerializer.Serialize(userDto));
+                return Results.Ok();
+            }).Produces(StatusCodes.Status204NoContent)
               .Produces(StatusCodes.Status409Conflict);
 
             webApplication.MapPost("/user/login", [AllowAnonymous] async (LoginDTO loginDTO, IUserService userService) =>
