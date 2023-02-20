@@ -9,6 +9,7 @@ using LibraryCL;
 using LibraryCL.Model;
 using LibraryCL.Repository;
 using LibraryCL.Repository.Implementation;
+using LibraryCL.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -99,6 +100,15 @@ builder.Services.AddAuthorization(options =>
       .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
       .RequireAuthenticatedUser()
       .Build();
+
+    options.AddPolicy(AuthorizationPolicies.Admin, policy =>
+              policy.RequireRole(Roles.Admin));
+
+    options.AddPolicy(AuthorizationPolicies.AdminLibrarian, policy =>
+              policy.RequireRole(Roles.Admin, Roles.Librarian));
+
+    options.AddPolicy(AuthorizationPolicies.AdminLibrarianUser, policy =>
+              policy.RequireRole(Roles.Admin, Roles.Librarian, Roles.User));
 });
 
 var app = builder.Build();

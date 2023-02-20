@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using LibraryAPI.DTO;
-using LibraryAPI.Exceptions;
 using LibraryAPI.Services;
+using LibraryCL.Security;
 using Microsoft.AspNetCore.Authorization;
 using System.Net;
 
@@ -42,7 +42,7 @@ namespace LibraryAPI.API
               .ProducesValidationProblem(StatusCodes.Status400BadRequest)
               .Produces(StatusCodes.Status409Conflict);
 
-            webApplication.MapPut("/user/{userId}/upgradeToLibrarian", [Authorize] async (string userId, IUserService userService) =>
+            webApplication.MapPut("/user/{userId}/upgradeToLibrarian", [Authorize(Policy = AuthorizationPolicies.Admin)] async (string userId, IUserService userService) =>
             {
                 logger.LogInformation("Upgrading user role to Librarian with user id {}", userId);
                 try
@@ -58,7 +58,7 @@ namespace LibraryAPI.API
             }).Produces(StatusCodes.Status200OK)
               .Produces(StatusCodes.Status409Conflict);
 
-            webApplication.MapPut("/user/{userId}/downgradeToUser", async (string userId, IUserService userService) =>
+            webApplication.MapPut("/user/{userId}/downgradeToUser", [Authorize(Policy = AuthorizationPolicies.Admin)] async (string userId, IUserService userService) =>
             {
                 logger.LogInformation("Downgrading Librarian to User with user id {}", userId);
                 try

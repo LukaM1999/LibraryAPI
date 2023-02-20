@@ -34,9 +34,12 @@ namespace LibraryCL
                     {
                         Id = "2c6f174e-3b0e-446f-86af-483d56fd7210",
                         UserName = "admin@mail.com",
+                        NormalizedUserName = "ADMIN@MAIL.COM",
                         Email = "admin@mail.com",
+                        NormalizedEmail = "ADMIN@MAIL.COM",
                         CreatedDate = DateTime.UtcNow,
-                        ModifiedDate = DateTime.UtcNow
+                        ModifiedDate = DateTime.UtcNow,
+                        PasswordHash = "AQAAAAEAACcQAAAAEFlyaJD2fJ9czKDU2MiOOxMDs+jqPm64BEUR8dAYAYHcRAXq8fldBTkw8lNbnrRkrA=="
                     },
                     new User()
                     {
