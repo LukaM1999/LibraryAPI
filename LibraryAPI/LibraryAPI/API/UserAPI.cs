@@ -2,6 +2,7 @@
 using LibraryAPI.DTO;
 using LibraryAPI.Exceptions;
 using LibraryAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using System.Net;
 
 namespace LibraryAPI.API
@@ -10,7 +11,7 @@ namespace LibraryAPI.API
     {
         public static void RegisterUserAPI(this WebApplication webApplication, ILogger logger)
         {
-            webApplication.MapPost("/user/register", async (UserRegistrationDTO userRegistrationDto,
+            webApplication.MapPost("/user/register", [AllowAnonymous] async (UserRegistrationDTO userRegistrationDto,
                 IValidator<UserRegistrationDTO> validator, IUserService userService) =>
             {
                 logger.LogInformation("Validating user registration model with email {}", userRegistrationDto.Email);
@@ -41,7 +42,7 @@ namespace LibraryAPI.API
               .ProducesValidationProblem(StatusCodes.Status400BadRequest)
               .Produces(StatusCodes.Status409Conflict);
 
-            webApplication.MapPut("/user/{userId}/upgradeToLibrarian", async (string userId, IUserService userService) =>
+            webApplication.MapPut("/user/{userId}/upgradeToLibrarian", [Authorize] async (string userId, IUserService userService) =>
             {
                 logger.LogInformation("Upgrading user role to Librarian with user id {}", userId);
                 try
@@ -70,6 +71,25 @@ namespace LibraryAPI.API
                     return Results.Conflict("Couldn't downgrade user with provided id to User role");
                 }
                 return Results.Ok();
+            }).Produces(StatusCodes.Status200OK)
+              .Produces(StatusCodes.Status409Conflict);
+
+            webApplication.MapPost("/user/login", [AllowAnonymous] async (LoginDTO loginDTO, IUserService userService) =>
+            {
+                logger.LogInformation("Attempting to log in user with email {}", loginDTO.Email);
+
+                LoginResponseDTO tokenDto;
+                try
+                {
+                    tokenDto = await userService.Login(loginDTO);
+                }
+                catch (Exception exception)
+                {
+                    logger.LogWarning("Couldn't login user with email {}. Message: {}", loginDTO.Email, exception);
+                    return Results.Conflict("Couldn't login user with provided login information");
+                }
+
+                return Results.Ok(tokenDto);
             }).Produces(StatusCodes.Status200OK)
               .Produces(StatusCodes.Status409Conflict);
         }
