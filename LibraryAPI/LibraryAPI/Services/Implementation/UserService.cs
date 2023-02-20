@@ -110,7 +110,7 @@ namespace LibraryAPI.Services.Implementation
 
             foreach (var userRole in userRoles)
             {
-                authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                authClaims.Add(new Claim(ClaimTypes.Role, userRole.ToUpper()));
             }
 
             var token = GetToken(authClaims);
