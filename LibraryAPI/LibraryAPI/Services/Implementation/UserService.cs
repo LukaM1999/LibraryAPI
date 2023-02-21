@@ -17,12 +17,14 @@ namespace LibraryAPI.Services.Implementation
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
         private readonly JWTOptions _jwtOptions;
+        private readonly IUploadImageService _uploadImageService;
 
-        public UserService(IMapper mapper, UserManager<User> userManager, IOptions<JWTOptions> jwtOptions)
+        public UserService(IMapper mapper, UserManager<User> userManager, IOptions<JWTOptions> jwtOptions, IUploadImageService uploadImageService)
         {
             _mapper = mapper;
             _userManager = userManager;
             _jwtOptions = jwtOptions.Value;
+            _uploadImageService = uploadImageService;
         }
 
         public async Task<User?> GetUserById(string id)
@@ -108,6 +110,8 @@ namespace LibraryAPI.Services.Implementation
             {
                 throw new UserUpdateException(nameof(user));
             }
+
+            await _userManager.UpdateNormalizedEmailAsync(user);
         }
 
         public async Task<LoginResponseDTO> Login(LoginDTO loginDTO)
@@ -144,6 +148,16 @@ namespace LibraryAPI.Services.Implementation
                 JWT = new JwtSecurityTokenHandler().WriteToken(token),
                 ValidTo = token.ValidTo
             };
+        }
+
+        public async Task UpdateAvatar(User user, string base64Image)
+        {
+            await _uploadImageService.UploadImage(user, base64Image);
+        }
+
+        public async Task RemoveAvatar(User user)
+        {
+            await _uploadImageService.RemoveImage(user);
         }
 
         private JwtSecurityToken GetToken(List<Claim> authClaims)

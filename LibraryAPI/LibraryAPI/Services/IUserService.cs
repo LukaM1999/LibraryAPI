@@ -14,5 +14,7 @@ namespace LibraryAPI.Services
         Task<LoginResponseDTO> Login(LoginDTO loginDTO);
         Task UpdateBasicInformation(User user, UpdateUserBasicDTO updateUserDTO);
         Task UpdateEmail(User user, string email);
+        Task UpdateAvatar(User user, string base64Image);
+        Task RemoveAvatar(User user);
     }
 }

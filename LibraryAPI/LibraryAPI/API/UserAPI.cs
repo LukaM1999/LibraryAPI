@@ -3,6 +3,7 @@ using LibraryAPI.DTO;
 using LibraryAPI.Services;
 using LibraryCL.Model;
 using LibraryCL.Security;
+using LibraryCL.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using System.Net;
 using System.Text.Json;
@@ -155,6 +156,89 @@ namespace LibraryAPI.API
                 return Results.NoContent();
             }).Produces(StatusCodes.Status204NoContent)
               .ProducesValidationProblem(StatusCodes.Status400BadRequest)
+              .Produces(StatusCodes.Status409Conflict);
+
+            webApplication.MapPut("/user/avatar", [Authorize] async (IHttpContextAccessor httpContextAccessor, IUserService userService) =>
+            {
+                logger.LogInformation("Updating user avatar");
+
+                var userId = httpContextAccessor.HttpContext?.User?.FindFirst("UserId")?.Value;
+                if (userId == null)
+                {
+                    logger.LogWarning("Current user not found");
+                    return Results.Conflict("Couldn't update user avatar");
+                }
+
+                httpContextAccessor.HttpContext?.Request.EnableBuffering();
+                string base64Avatar = await httpContextAccessor.HttpContext?.Request?.BodyReader.GetBase64String();
+                httpContextAccessor.HttpContext?.Request.Body.Seek(0, SeekOrigin.Begin);
+
+                User? user = await userService.GetUserById(userId);
+                if (user == null)
+                {
+                    logger.LogWarning("User not found with id: {}", userId);
+                    return Results.Conflict("Couldn't update user avatar");
+                }
+
+                await userService.UpdateAvatar(user, base64Avatar);
+
+                logger.LogInformation("Avatar successfully updated for user with id: {}", userId);
+                return Results.NoContent();
+            }).Produces(StatusCodes.Status204NoContent)
+              .Produces(StatusCodes.Status409Conflict)
+              .Accepts<IFormFile>("image/png,image/jpg");
+
+            webApplication.MapDelete("/user/avatar", [Authorize] async (IHttpContextAccessor httpContextAccessor, IUserService userService) =>
+            {
+                logger.LogInformation("Removing user avatar");
+
+                var userId = httpContextAccessor.HttpContext?.User?.FindFirst("UserId")?.Value;
+                if (userId == null)
+                {
+                    logger.LogWarning("Current user not found");
+                    return Results.Conflict("Couldn't remove user avatar");
+                }
+
+                User? user = await userService.GetUserById(userId);
+                if (user == null)
+                {
+                    logger.LogWarning("User not found with id: {}", userId);
+                    return Results.Conflict("Couldn't remove user avatar");
+                }
+
+                await userService.RemoveAvatar(user);
+
+                logger.LogInformation("Avatar successfully removed for user with id: {}", userId);
+                return Results.NoContent();
+            }).Produces(StatusCodes.Status204NoContent)
+              .Produces(StatusCodes.Status409Conflict);
+
+            webApplication.MapGet("/user/avatar", [Authorize] async (IHttpContextAccessor httpContextAccessor, IUserService userService) =>
+            {
+                logger.LogInformation("Getting user avatar");
+
+                var userId = httpContextAccessor.HttpContext?.User?.FindFirst("UserId")?.Value;
+                if (userId == null)
+                {
+                    logger.LogWarning("Current user not found");
+                    return Results.Conflict("Couldn't retrieve user avatar");
+                }
+
+                User? user = await userService.GetUserById(userId);
+                if (user == null)
+                {
+                    logger.LogWarning("User not found with id: {}", userId);
+                    return Results.Conflict("Couldn't retrieve user avatar");
+                }
+
+                if (user.Avatar == null) return Results.NoContent();
+
+                logger.LogInformation("Avatar successfully retrieved for user with id: {}", userId);
+
+                return Results.File(Convert.FromBase64String(user.Avatar), "image/jpg");
+
+            }).Produces(StatusCodes.Status200OK)
+              .Produces(StatusCodes.Status204NoContent)
               .Produces(StatusCodes.Status409Conflict);
 
             webApplication.MapPost("/user/login", [AllowAnonymous] async (LoginDTO loginDTO, IUserService userService) =>
