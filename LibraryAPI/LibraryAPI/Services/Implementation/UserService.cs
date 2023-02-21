@@ -30,6 +30,11 @@ namespace LibraryAPI.Services.Implementation
             return await _userManager.FindByIdAsync(id);
         }
 
+        public async Task<User?> GetUserByEmail(string email)
+        {
+            return await _userManager.FindByEmailAsync(email);
+        }
+
         public async Task<IdentityResult> RegisterUser(UserRegistrationDTO userRegistrationDto)
         {
             User user = _mapper.Map<User>(userRegistrationDto);
@@ -92,6 +97,15 @@ namespace LibraryAPI.Services.Implementation
 
             var updateResult = await _userManager.UpdateAsync(user);
             if (!updateResult.Succeeded) {
+                throw new UserUpdateException(nameof(user));
+            }
+        }
+
+        public async Task UpdateEmail(User user, string email)
+        {
+            var updateResult = await _userManager.SetEmailAsync(user, email);
+            if (!updateResult.Succeeded)
+            {
                 throw new UserUpdateException(nameof(user));
             }
         }

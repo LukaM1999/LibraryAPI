@@ -4,10 +4,8 @@ using LibraryAPI.Services;
 using LibraryCL.Model;
 using LibraryCL.Security;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using System.Net;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace LibraryAPI.API
 {
@@ -106,8 +104,57 @@ namespace LibraryAPI.API
                 }
 
                 logger.LogInformation("User with id: {} successfully updated with information: {}", userId, JsonSerializer.Serialize(userDto));
-                return Results.Ok();
+                return Results.NoContent();
             }).Produces(StatusCodes.Status204NoContent)
+              .Produces(StatusCodes.Status409Conflict);
+
+            webApplication.MapPut("/user/email", [Authorize] async (UpdateUserEmailDTO emailDto, IValidator<UpdateUserEmailDTO> validator, IHttpContextAccessor httpContextAccessor, IUserService userService) =>
+            {
+                logger.LogInformation("Updating user email: {}", emailDto.Email);
+
+                var validationResult = await validator.ValidateAsync(emailDto);
+                if (!validationResult.IsValid)
+                {
+                    logger.LogWarning("Validation of provided user email failed");
+                    return Results.ValidationProblem(validationResult.ToDictionary(),
+                    statusCode: (int)HttpStatusCode.BadRequest);
+                }
+
+                var userId = httpContextAccessor.HttpContext?.User?.FindFirst("UserId")?.Value;
+                if (userId == null)
+                {
+                    logger.LogWarning("Current user not found: {}", emailDto.Email);
+                    return Results.Conflict("Couldn't update user email");
+                }
+
+                User? userWithEmail = await userService.GetUserByEmail(emailDto.Email);
+                if (userWithEmail != null && userWithEmail.Id != userId)
+                {
+                    logger.LogWarning("User with provided email: {} already exists", emailDto.Email);
+                    return Results.Conflict("User with provided email already exists");
+                }
+
+                User? user = await userService.GetUserById(userId);
+                if (user == null)
+                {
+                    logger.LogWarning("User not found with id: {}", userId);
+                    return Results.Conflict("Couldn't update user email");
+                }
+
+                try
+                {
+                    await userService.UpdateEmail(user, emailDto.Email);
+                }
+                catch (Exception exception)
+                {
+                    logger.LogWarning("Couldn't update user with id: {} and email: {} with new email: {}. Message: {}", userId, user.Email, emailDto.Email, exception.Message);
+                    return Results.Conflict("Couldn't update basic user information");
+                }
+
+                logger.LogInformation("User with id: {} and email: {} successfully updated with new email: {}", userId, user.Email, emailDto.Email);
+                return Results.NoContent();
+            }).Produces(StatusCodes.Status204NoContent)
+              .ProducesValidationProblem(StatusCodes.Status400BadRequest)
               .Produces(StatusCodes.Status409Conflict);
 
             webApplication.MapPost("/user/login", [AllowAnonymous] async (LoginDTO loginDTO, IUserService userService) =>
