@@ -1,9 +1,12 @@
 ﻿using FluentValidation;
 using LibraryAPI.DTO;
 using LibraryAPI.Services;
+using LibraryCL.Model;
 using LibraryCL.Security;
+using LibraryCL.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using System.Net;
+using System.Text.Json;
 
 namespace LibraryAPI.API
 {
@@ -72,6 +75,170 @@ namespace LibraryAPI.API
                 }
                 return Results.Ok();
             }).Produces(StatusCodes.Status200OK)
+              .Produces(StatusCodes.Status409Conflict);
+
+            webApplication.MapPut("/user/basicInformation", [Authorize] async (UpdateUserBasicDTO userDto, IHttpContextAccessor httpContextAccessor, IUserService userService) =>
+            {
+                logger.LogInformation("Updating basic user information: {}", JsonSerializer.Serialize(userDto));
+
+                var userId = httpContextAccessor.HttpContext?.User?.FindFirst("UserId")?.Value;
+                if(userId == null)
+                {
+                    logger.LogWarning("Current user not found: {}", JsonSerializer.Serialize(userDto));
+                    return Results.Conflict("Couldn't update basic user information");
+                }
+
+                User? user = await userService.GetUserById(userId);
+                if(user == null)
+                {
+                    logger.LogWarning("User not found with id: {}", userId);
+                    return Results.Conflict("Couldn't update basic user information");
+                }
+
+                try
+                {
+                    await userService.UpdateBasicInformation(user, userDto);
+                } catch (Exception exception)
+                {
+                    logger.LogWarning("Couldn't update user with id: {} and information: {}. Message: {}", userId, JsonSerializer.Serialize(userDto), exception.Message);
+                    return Results.Conflict("Couldn't update basic user information");
+                }
+
+                logger.LogInformation("User with id: {} successfully updated with information: {}", userId, JsonSerializer.Serialize(userDto));
+                return Results.NoContent();
+            }).Produces(StatusCodes.Status204NoContent)
+              .Produces(StatusCodes.Status409Conflict);
+
+            webApplication.MapPut("/user/email", [Authorize] async (UpdateUserEmailDTO emailDto, IValidator<UpdateUserEmailDTO> validator, IHttpContextAccessor httpContextAccessor, IUserService userService) =>
+            {
+                logger.LogInformation("Updating user email: {}", emailDto.Email);
+
+                var validationResult = await validator.ValidateAsync(emailDto);
+                if (!validationResult.IsValid)
+                {
+                    logger.LogWarning("Validation of provided user email failed");
+                    return Results.ValidationProblem(validationResult.ToDictionary(),
+                    statusCode: (int)HttpStatusCode.BadRequest);
+                }
+
+                var userId = httpContextAccessor.HttpContext?.User?.FindFirst("UserId")?.Value;
+                if (userId == null)
+                {
+                    logger.LogWarning("Current user not found: {}", emailDto.Email);
+                    return Results.Conflict("Couldn't update user email");
+                }
+
+                User? userWithEmail = await userService.GetUserByEmail(emailDto.Email);
+                if (userWithEmail != null && userWithEmail.Id != userId)
+                {
+                    logger.LogWarning("User with provided email: {} already exists", emailDto.Email);
+                    return Results.Conflict("User with provided email already exists");
+                }
+
+                User? user = await userService.GetUserById(userId);
+                if (user == null)
+                {
+                    logger.LogWarning("User not found with id: {}", userId);
+                    return Results.Conflict("Couldn't update user email");
+                }
+
+                try
+                {
+                    await userService.UpdateEmail(user, emailDto.Email);
+                }
+                catch (Exception exception)
+                {
+                    logger.LogWarning("Couldn't update user with id: {} and email: {} with new email: {}. Message: {}", userId, user.Email, emailDto.Email, exception.Message);
+                    return Results.Conflict("Couldn't update basic user information");
+                }
+
+                logger.LogInformation("User with id: {} and email: {} successfully updated with new email: {}", userId, user.Email, emailDto.Email);
+                return Results.NoContent();
+            }).Produces(StatusCodes.Status204NoContent)
+              .ProducesValidationProblem(StatusCodes.Status400BadRequest)
+              .Produces(StatusCodes.Status409Conflict);
+
+            webApplication.MapPut("/user/avatar", [Authorize] async (IHttpContextAccessor httpContextAccessor, IUserService userService) =>
+            {
+                logger.LogInformation("Updating user avatar");
+
+                var userId = httpContextAccessor.HttpContext?.User?.FindFirst("UserId")?.Value;
+                if (userId == null)
+                {
+                    logger.LogWarning("Current user not found");
+                    return Results.Conflict("Couldn't update user avatar");
+                }
+
+                httpContextAccessor.HttpContext?.Request.EnableBuffering();
+                string base64Avatar = await httpContextAccessor.HttpContext?.Request?.BodyReader.GetBase64String();
+                httpContextAccessor.HttpContext?.Request.Body.Seek(0, SeekOrigin.Begin);
+
+                User? user = await userService.GetUserById(userId);
+                if (user == null)
+                {
+                    logger.LogWarning("User not found with id: {}", userId);
+                    return Results.Conflict("Couldn't update user avatar");
+                }
+
+                await userService.UpdateAvatar(user, base64Avatar);
+
+                logger.LogInformation("Avatar successfully updated for user with id: {}", userId);
+                return Results.NoContent();
+            }).Produces(StatusCodes.Status204NoContent)
+              .Produces(StatusCodes.Status409Conflict)
+              .Accepts<IFormFile>("image/png,image/jpg");
+
+            webApplication.MapDelete("/user/avatar", [Authorize] async (IHttpContextAccessor httpContextAccessor, IUserService userService) =>
+            {
+                logger.LogInformation("Removing user avatar");
+
+                var userId = httpContextAccessor.HttpContext?.User?.FindFirst("UserId")?.Value;
+                if (userId == null)
+                {
+                    logger.LogWarning("Current user not found");
+                    return Results.Conflict("Couldn't remove user avatar");
+                }
+
+                User? user = await userService.GetUserById(userId);
+                if (user == null)
+                {
+                    logger.LogWarning("User not found with id: {}", userId);
+                    return Results.Conflict("Couldn't remove user avatar");
+                }
+
+                await userService.RemoveAvatar(user);
+
+                logger.LogInformation("Avatar successfully removed for user with id: {}", userId);
+                return Results.NoContent();
+            }).Produces(StatusCodes.Status204NoContent)
+              .Produces(StatusCodes.Status409Conflict);
+
+            webApplication.MapGet("/user/avatar", [Authorize] async (IHttpContextAccessor httpContextAccessor, IUserService userService) =>
+            {
+                logger.LogInformation("Getting user avatar");
+
+                var userId = httpContextAccessor.HttpContext?.User?.FindFirst("UserId")?.Value;
+                if (userId == null)
+                {
+                    logger.LogWarning("Current user not found");
+                    return Results.Conflict("Couldn't retrieve user avatar");
+                }
+
+                User? user = await userService.GetUserById(userId);
+                if (user == null)
+                {
+                    logger.LogWarning("User not found with id: {}", userId);
+                    return Results.Conflict("Couldn't retrieve user avatar");
+                }
+
+                if (user.Avatar == null) return Results.NoContent();
+
+                logger.LogInformation("Avatar successfully retrieved for user with id: {}", userId);
+
+                return Results.File(Convert.FromBase64String(user.Avatar), "image/jpg");
+
+            }).Produces(StatusCodes.Status200OK)
+              .Produces(StatusCodes.Status204NoContent)
               .Produces(StatusCodes.Status409Conflict);
 
             webApplication.MapPost("/user/login", [AllowAnonymous] async (LoginDTO loginDTO, IUserService userService) =>

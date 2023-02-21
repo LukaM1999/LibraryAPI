@@ -17,17 +17,24 @@ namespace LibraryAPI.Services.Implementation
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
         private readonly JWTOptions _jwtOptions;
+        private readonly IUploadImageService _uploadImageService;
 
-        public UserService(IMapper mapper, UserManager<User> userManager, IOptions<JWTOptions> jwtOptions)
+        public UserService(IMapper mapper, UserManager<User> userManager, IOptions<JWTOptions> jwtOptions, IUploadImageService uploadImageService)
         {
             _mapper = mapper;
             _userManager = userManager;
             _jwtOptions = jwtOptions.Value;
+            _uploadImageService = uploadImageService;
         }
 
         public async Task<User?> GetUserById(string id)
         {
             return await _userManager.FindByIdAsync(id);
+        }
+
+        public async Task<User?> GetUserByEmail(string email)
+        {
+            return await _userManager.FindByEmailAsync(email);
         }
 
         public async Task<IdentityResult> RegisterUser(UserRegistrationDTO userRegistrationDto)
@@ -85,6 +92,28 @@ namespace LibraryAPI.Services.Implementation
             }
         }
 
+        public async Task UpdateBasicInformation(User user, UpdateUserBasicDTO updateUserDTO)
+        {
+            user.FirstName = updateUserDTO.FirstName;
+            user.LastName = updateUserDTO.LastName;
+
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded) {
+                throw new UserUpdateException(nameof(user));
+            }
+        }
+
+        public async Task UpdateEmail(User user, string email)
+        {
+            var updateResult = await _userManager.SetEmailAsync(user, email);
+            if (!updateResult.Succeeded)
+            {
+                throw new UserUpdateException(nameof(user));
+            }
+
+            await _userManager.UpdateNormalizedEmailAsync(user);
+        }
+
         public async Task<LoginResponseDTO> Login(LoginDTO loginDTO)
         {
             var user = await _userManager.FindByEmailAsync(loginDTO.Email);
@@ -119,6 +148,16 @@ namespace LibraryAPI.Services.Implementation
                 JWT = new JwtSecurityTokenHandler().WriteToken(token),
                 ValidTo = token.ValidTo
             };
+        }
+
+        public async Task UpdateAvatar(User user, string base64Image)
+        {
+            await _uploadImageService.UploadImage(user, base64Image);
+        }
+
+        public async Task RemoveAvatar(User user)
+        {
+            await _uploadImageService.RemoveImage(user);
         }
 
         private JwtSecurityToken GetToken(List<Claim> authClaims)

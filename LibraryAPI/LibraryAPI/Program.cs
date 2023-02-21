@@ -62,15 +62,21 @@ builder.Services.Configure<JWTOptions>(
 var jwtOptions = builder.Configuration.GetSection(JWTOptions.JWT)
                                                      .Get<JWTOptions>();
 
-builder.Services.AddIdentity<User, IdentityRole>()
-    .AddEntityFrameworkStores<LibraryDbContext>()
-    .AddDefaultTokenProviders();
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+{
+    options.User.RequireUniqueEmail = true;
+
+}).AddEntityFrameworkStores<LibraryDbContext>()
+  .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<DbContext, LibraryDbContext>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUploadImageService, UploadImageDatabaseService>();
 
 builder.Services.AddSingleton<IValidator<UserRegistrationDTO>, UserRegistrationValidator>();
+builder.Services.AddSingleton<IValidator<UpdateUserEmailDTO>, UserEmailValidator>();
+
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddAuthentication(options =>
