@@ -36,7 +36,7 @@ namespace LibraryAPI.API
                     logger.LogWarning(exception, "Couldn't create author: {author}", authorDto);
                     return Results.Conflict("Couldn't create author");
                 }
-                return Results.Ok($"/author/{author.Id}");
+                return Results.Ok("Successfully created author");
             }).Produces(StatusCodes.Status200OK)
               .ProducesValidationProblem(StatusCodes.Status400BadRequest)
               .Produces(StatusCodes.Status409Conflict);

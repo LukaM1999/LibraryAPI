@@ -50,10 +50,6 @@ namespace LibraryAPI.Services.Implementation
 
         public async Task DeleteAuthor(Author author)
         {
-            foreach (var book in author.Books)
-            {
-                book.AuthorId = null;
-            }
             _unitOfWork.AuthorRepository.Delete(author);
             await _unitOfWork.Save();
         }
