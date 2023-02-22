@@ -7,10 +7,10 @@ namespace LibraryCL.Repository
 	public interface IGenericDbRepository<T> where T : EntityBase
 	{
 		Task<T> Create(T entity);
-		Task<T> Update(T entity);
-		Task<T?> GetById(int id);
+		T Update(T entity);
+		Task<T?> GetById(int id, params Expression<Func<T, object>>[] includes);
 		IQueryable<T> GetAll();
-		Task Delete(int id);
+		void Delete(T entity);
 		IQueryable<T> Search(Expression<Func<T, bool>> exp);
 	}
 }

@@ -17,21 +17,27 @@ namespace LibraryCL.Repository.Implementation
         public async Task<T> Create(T entity)
         {
             await _libraryDbContext.Set<T>().AddAsync(entity);
-            await Save();
             return entity;
         }
 
 
-        public async Task<T> Update(T entity)
+        public T Update(T entity)
         {
             _libraryDbContext.Set<T>().Update(entity);
-            await Save();
             return entity;
         }
 
-        public async Task<T?> GetById(int id)
+        public async Task<T?> GetById(int id, params Expression<Func<T, object>>[] includes)
         {
-            return await _libraryDbContext.Set<T>().FindAsync(id);
+            IQueryable<T> entities = _libraryDbContext.Set<T>();
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    entities = entities.Include(include);
+                }
+            }
+            return await entities.FirstOrDefaultAsync(e => e.Id == id);
         }
 
         public IQueryable<T> GetAll()
@@ -39,22 +45,15 @@ namespace LibraryCL.Repository.Implementation
             return _libraryDbContext.Set<T>();
         }
 
-        public async Task Delete(int id)
+        public void Delete(T entity)
         {
-            T? entity = await _libraryDbContext.Set<T>().FindAsync(id);
-            if (entity == null) return;
-            _libraryDbContext.Set<T>().Remove(entity);
-            await Save();
+            entity.Deleted = true;
+            _libraryDbContext.Set<T>().Update(entity);
         }
 
         public IQueryable<T> Search(Expression<Func<T, bool>> expression)
         {
             return _libraryDbContext.Set<T>().Where(expression);
-        }
-
-        private async Task Save()
-        {
-            await _libraryDbContext.SaveChangesAsync();
         }
     }
 }

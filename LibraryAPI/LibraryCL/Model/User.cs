@@ -23,6 +23,5 @@ namespace LibraryCL.Model
 
         [Required]
         public DateTime ModifiedDate { get; set; }
-
     }
 }
