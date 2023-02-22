@@ -4,7 +4,9 @@ namespace LibraryCL.Model
 {
     public class Author : EntityBase
     {
-        public Author(string firstName, string lastName, DateTime created)
+        public Author() { }
+
+        public Author(string firstName, string lastName, DateTime created) : base()
         {
             FirstName = firstName;
             LastName = lastName;
@@ -24,6 +26,6 @@ namespace LibraryCL.Model
         [Required]
         public DateTime ModifiedDate { get; set; }
 
-        public ICollection<Book> Books { get; set; } = new List<Book>();
+        public virtual ICollection<Book> Books { get; set; } = new List<Book>();
     }
 }

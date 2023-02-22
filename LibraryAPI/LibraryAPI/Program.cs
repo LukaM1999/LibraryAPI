@@ -73,9 +73,12 @@ builder.Services.AddScoped<DbContext, LibraryDbContext>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUploadImageService, UploadImageDatabaseService>();
+builder.Services.AddScoped<IAuthorService, AuthorService>();
+
 
 builder.Services.AddSingleton<IValidator<UserRegistrationDTO>, UserRegistrationValidator>();
 builder.Services.AddSingleton<IValidator<UpdateUserEmailDTO>, UserEmailValidator>();
+builder.Services.AddSingleton<IValidator<AuthorCreationDTO>, AuthorCreationValidator>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -135,6 +138,7 @@ app.UseHttpLogging();
 app.Logger.LogInformation("Running application...");
 
 app.RegisterUserAPI(app.Logger);
+app.RegisterAuthorAPI(app.Logger);
 
 app.UseAuthorization();
 

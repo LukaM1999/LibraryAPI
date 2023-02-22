@@ -6,6 +6,8 @@ namespace LibraryCL.Repository.Implementation
     public class UnitOfWork : IDisposable, IUnitOfWork
     {
         private readonly DbContext _dbContext;
+        private IGenericDbRepository<Author> _authorRepository;
+
 
         public UnitOfWork(DbContext dbContext) { 
             _dbContext = dbContext;
@@ -14,6 +16,15 @@ namespace LibraryCL.Repository.Implementation
         public async Task Save()
         {
             await _dbContext.SaveChangesAsync();
+        }
+
+        public IGenericDbRepository<Author> AuthorRepository
+        {
+            get
+            {
+                this._authorRepository ??= new GenericDbRepository<Author>(_dbContext);
+                return _authorRepository;
+            }
         }
 
         private bool _disposed = false;

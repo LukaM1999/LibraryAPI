@@ -42,7 +42,7 @@ namespace LibraryAPI.Services.Implementation
             User user = _mapper.Map<User>(userRegistrationDto);
 
             var creationResult = await _userManager.CreateAsync(user, userRegistrationDto.Password);
-            if(!creationResult.Succeeded)
+            if (!creationResult.Succeeded)
             {
                 return creationResult;
             }
@@ -53,7 +53,7 @@ namespace LibraryAPI.Services.Implementation
         public async Task UpgradeUserToLibrarian(string userId)
         {
             var user = await GetUserById(userId);
-            if(user == null)
+            if (user == null)
             {
                 throw new UserNotFoundException(nameof(user));
             }
@@ -98,7 +98,8 @@ namespace LibraryAPI.Services.Implementation
             user.LastName = updateUserDTO.LastName;
 
             var updateResult = await _userManager.UpdateAsync(user);
-            if (!updateResult.Succeeded) {
+            if (!updateResult.Succeeded)
+            {
                 throw new UserUpdateException(nameof(user));
             }
         }
@@ -123,7 +124,7 @@ namespace LibraryAPI.Services.Implementation
             }
 
             var isLoginValid = await _userManager.CheckPasswordAsync(user, loginDTO.Password);
-            if(!isLoginValid)
+            if (!isLoginValid)
             {
                 throw new InvalidLoginException(nameof(user));
             }
@@ -167,7 +168,7 @@ namespace LibraryAPI.Services.Implementation
             var token = new JwtSecurityToken(
                 issuer: _jwtOptions.ValidIssuer,
                 audience: _jwtOptions.ValidAudience,
-                expires: DateTime.UtcNow.AddMinutes(30),
+                expires: DateTime.UtcNow.AddDays(7),
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                 );

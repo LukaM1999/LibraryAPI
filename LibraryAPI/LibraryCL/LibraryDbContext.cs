@@ -15,8 +15,6 @@ namespace LibraryCL
         {
         }
 
-        private DbSet<User> _users;
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -76,6 +74,71 @@ namespace LibraryCL
                    RoleId = "4a5e174e-3b0e-446f-86af-483d56fd7210",
                    UserId = "4a8h174e-3b0e-446f-86af-483d56fd7210"
                }
+            );
+
+            modelBuilder.Entity<Author>().HasQueryFilter(author => !author.Deleted);
+            modelBuilder.Entity<Author>().HasData(
+                new Author
+                {
+                    Id = 1,
+                    FirstName = "Tom",
+                    LastName = "Paice",
+                    Created = DateTime.UtcNow,
+                    ModifiedDate = DateTime.UtcNow,
+                },
+                new Author
+                {
+                    Id = 2,
+                    FirstName = "Bob",
+                    LastName = "Vance",
+                    Created = DateTime.UtcNow,
+                    ModifiedDate = DateTime.UtcNow,
+                },
+                new Author
+                {
+                    Id = 3,
+                    FirstName = "Nick",
+                    LastName = "Chapsas",
+                    Created = DateTime.UtcNow,
+                    ModifiedDate = DateTime.UtcNow
+                }
+            );
+
+            modelBuilder.Entity<Book>().HasQueryFilter(book => !book.Deleted);
+            modelBuilder.Entity<Book>().HasData(
+                new Book
+                {
+                    Id = 1,
+                    Name = "Marvelous Tale of Time",
+                    Created = DateTime.UtcNow,
+                    ModifiedDate = DateTime.UtcNow,
+                    AuthorId = 1,
+                },
+                new Book
+                {
+                    Id = 2,
+                    Name = "Marvelous Tale of Space",
+                    Created = DateTime.UtcNow,
+                    ModifiedDate = DateTime.UtcNow,
+                    AuthorId = 1,
+                },
+                new Book
+                {
+                    Id = 3,
+                    Name = "Refrigeration 101",
+                    Created = DateTime.UtcNow,
+                    ModifiedDate = DateTime.UtcNow,
+                    AuthorId = 2,
+                },
+                new Book
+                {
+                    Id = 4,
+                    Name = "Programming 101",
+                    Created = DateTime.UtcNow,
+                    ModifiedDate = DateTime.UtcNow,
+                    AuthorId = 3,
+                    Deleted = true,
+                }
             );
 #endif
         }
