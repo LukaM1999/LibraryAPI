@@ -32,8 +32,7 @@ namespace LibraryAPI.Services.Implementation
 
         public async Task UpdateAuthor(Author author, AuthorCreationDTO authorDto)
         {
-            author.FirstName = authorDto.FirstName;
-            author.LastName = authorDto.LastName;
+            _mapper.Map(authorDto, author);
 
             _unitOfWork.AuthorRepository.Update(author);
             await _unitOfWork.Save();
