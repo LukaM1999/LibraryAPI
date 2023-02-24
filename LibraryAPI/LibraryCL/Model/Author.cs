@@ -6,12 +6,10 @@ namespace LibraryCL.Model
     {
         public Author() { }
 
-        public Author(string firstName, string lastName, DateTime created) : base()
+        public Author(string firstName, string lastName) : base()
         {
             FirstName = firstName;
             LastName = lastName;
-            Created = created;
-            ModifiedDate = created;
         }
 
         [MaxLength(100)]
@@ -19,12 +17,6 @@ namespace LibraryCL.Model
 
         [MaxLength(100)]
         public string LastName { get; set; }
-
-        [Required]
-        public DateTime Created { get; init; }
-
-        [Required]
-        public DateTime ModifiedDate { get; set; }
 
         public virtual ICollection<Book> Books { get; set; } = new List<Book>();
     }

@@ -10,5 +10,6 @@ namespace LibraryAPI.Services
         Task<AuthorDTO> CreateAuthor(AuthorCreationDTO author);
         Task UpdateAuthor(Author author, AuthorCreationDTO authorDto);
         Task DeleteAuthor(Author author);
+        List<AuthorDTO> GetAllAuthors();
     }
 }

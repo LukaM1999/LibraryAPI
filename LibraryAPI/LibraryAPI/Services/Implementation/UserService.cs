@@ -175,5 +175,14 @@ namespace LibraryAPI.Services.Implementation
 
             return token;
         }
+
+        public async Task<UserDTO?> GetUserInformationByEmail(string email)
+        {
+            User user = await _userManager.FindByEmailAsync(email.ToUpper());
+
+            if (user == null) return null;
+
+            return _mapper.Map<UserDTO>(user);
+        }
     }
 }

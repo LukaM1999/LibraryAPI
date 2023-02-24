@@ -10,6 +10,7 @@ namespace LibraryAPI.MapperProfiles
         {
             CreateMap<AuthorCreationDTO, Author>();
             CreateMap<AuthorDTO, Author>().ReverseMap();
+            CreateMap<AuthorBasicDTO, Author>().ReverseMap();
         }
     }
 }

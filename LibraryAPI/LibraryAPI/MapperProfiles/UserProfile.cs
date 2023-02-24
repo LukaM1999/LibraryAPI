@@ -11,6 +11,8 @@ namespace LibraryAPI.MapperProfiles
             CreateMap<UserRegistrationDTO, User>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
                 .ForMember(dest => dest.SecurityStamp, opt => Guid.NewGuid().ToString());
+
+            CreateMap<UserDTO, User>().ReverseMap();
         }
     }
 }

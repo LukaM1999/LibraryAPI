@@ -1,5 +1,6 @@
 using FluentValidation;
 using LibraryAPI.API;
+using LibraryAPI.API.LibraryAPI.API;
 using LibraryAPI.DTO;
 using LibraryAPI.Options;
 using LibraryAPI.Services;
@@ -23,7 +24,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options => {
+builder.Services.AddSwaggerGen(options =>
+{
     options.EnableAnnotations();
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -74,11 +76,13 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUploadImageService, UploadImageDatabaseService>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<IBookService, BookService>();
 
 
 builder.Services.AddSingleton<IValidator<UserRegistrationDTO>, UserRegistrationValidator>();
 builder.Services.AddSingleton<IValidator<UpdateUserEmailDTO>, UserEmailValidator>();
 builder.Services.AddSingleton<IValidator<AuthorCreationDTO>, AuthorCreationValidator>();
+builder.Services.AddSingleton<IValidator<BookCreationDTO>, BookCreationValidator>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -139,6 +143,7 @@ app.Logger.LogInformation("Running application...");
 
 app.RegisterUserAPI(app.Logger);
 app.RegisterAuthorAPI(app.Logger);
+app.RegisterBookAPI(app.Logger);
 
 app.UseAuthorization();
 

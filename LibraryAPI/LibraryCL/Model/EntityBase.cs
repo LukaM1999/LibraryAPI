@@ -10,5 +10,9 @@ namespace LibraryCL.Model
         public int Id { get; set; }
 
         public bool Deleted { get; set; }
+
+        public DateTime CreatedDate { get; set; }
+
+        public DateTime ModifiedDate { get; set; }
     }
 }

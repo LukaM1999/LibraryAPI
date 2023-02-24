@@ -49,8 +49,18 @@ namespace LibraryAPI.Services.Implementation
 
         public async Task DeleteAuthor(Author author)
         {
+            foreach (var book in author.Books)
+            {
+                book.AuthorId = null;
+            }
             _unitOfWork.AuthorRepository.Delete(author);
             await _unitOfWork.Save();
+        }
+
+        public List<AuthorDTO> GetAllAuthors()
+        {
+            List<Author> authors = _unitOfWork.AuthorRepository.GetAll().ToList();
+            return _mapper.Map<List<AuthorDTO>>(authors);
         }
     }
 }

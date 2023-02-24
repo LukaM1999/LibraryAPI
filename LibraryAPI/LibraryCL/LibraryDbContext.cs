@@ -15,6 +15,31 @@ namespace LibraryCL
         {
         }
 
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var entries = ChangeTracker
+                .Entries()
+                .Where(e => e.Entity is EntityBase && (
+                        e.State == EntityState.Added
+                        || e.State == EntityState.Modified));
+
+            foreach (var entityEntry in entries)
+            {
+                if (entityEntry.State == EntityState.Added)
+                {
+                    ((EntityBase)entityEntry.Entity).CreatedDate = DateTime.UtcNow;
+                }
+                else
+                {
+                    Entry((EntityBase)entityEntry.Entity).Property(p => p.CreatedDate).IsModified = false;
+                }
+
+                ((EntityBase)entityEntry.Entity).ModifiedDate = DateTime.UtcNow;
+            }
+
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -83,7 +108,7 @@ namespace LibraryCL
                     Id = 1,
                     FirstName = "Tom",
                     LastName = "Paice",
-                    Created = DateTime.UtcNow,
+                    CreatedDate = DateTime.UtcNow,
                     ModifiedDate = DateTime.UtcNow,
                 },
                 new Author
@@ -91,7 +116,7 @@ namespace LibraryCL
                     Id = 2,
                     FirstName = "Bob",
                     LastName = "Vance",
-                    Created = DateTime.UtcNow,
+                    CreatedDate = DateTime.UtcNow,
                     ModifiedDate = DateTime.UtcNow,
                 },
                 new Author
@@ -99,7 +124,7 @@ namespace LibraryCL
                     Id = 3,
                     FirstName = "Nick",
                     LastName = "Chapsas",
-                    Created = DateTime.UtcNow,
+                    CreatedDate = DateTime.UtcNow,
                     ModifiedDate = DateTime.UtcNow
                 }
             );
@@ -110,7 +135,7 @@ namespace LibraryCL
                 {
                     Id = 1,
                     Name = "Marvelous Tale of Time",
-                    Created = DateTime.UtcNow,
+                    CreatedDate = DateTime.UtcNow,
                     ModifiedDate = DateTime.UtcNow,
                     AuthorId = 1,
                 },
@@ -118,7 +143,7 @@ namespace LibraryCL
                 {
                     Id = 2,
                     Name = "Marvelous Tale of Space",
-                    Created = DateTime.UtcNow,
+                    CreatedDate = DateTime.UtcNow,
                     ModifiedDate = DateTime.UtcNow,
                     AuthorId = 1,
                 },
@@ -126,7 +151,7 @@ namespace LibraryCL
                 {
                     Id = 3,
                     Name = "Refrigeration 101",
-                    Created = DateTime.UtcNow,
+                    CreatedDate = DateTime.UtcNow,
                     ModifiedDate = DateTime.UtcNow,
                     AuthorId = 2,
                 },
@@ -134,7 +159,7 @@ namespace LibraryCL
                 {
                     Id = 4,
                     Name = "Programming 101",
-                    Created = DateTime.UtcNow,
+                    CreatedDate = DateTime.UtcNow,
                     ModifiedDate = DateTime.UtcNow,
                     AuthorId = 3,
                     Deleted = true,

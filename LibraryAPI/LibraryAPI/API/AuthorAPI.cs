@@ -4,6 +4,7 @@ using LibraryAPI.Services;
 using LibraryCL.Model;
 using LibraryCL.Security;
 using Microsoft.AspNetCore.Authorization;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using System.Text.Json;
 
@@ -13,7 +14,14 @@ namespace LibraryAPI.API
     {
         public static void RegisterAuthorAPI(this WebApplication webApplication, ILogger logger)
         {
-            webApplication.MapPost("/author", [Authorize(Policy = AuthorizationPolicies.AdminLibrarian)] async (AuthorCreationDTO authorDto,
+            webApplication.MapPost("/author",
+            [SwaggerResponse(200, "Successfully created author")]
+            [SwaggerResponse(400, "Invalid author information provided")]
+            [SwaggerResponse(409, "Unable to create author")]
+            [SwaggerOperation(
+                    Summary = "Create new author | [Authorized: Admin or Librarian]",
+                    Description = "Creates a new author")]
+            [Authorize(Policy = AuthorizationPolicies.AdminLibrarian)] async (AuthorCreationDTO authorDto,
                 IValidator<AuthorCreationDTO> validator, IAuthorService authorService) =>
             {
                 logger.LogInformation("Creating author: {author}", JsonSerializer.Serialize(authorDto));
@@ -37,11 +45,20 @@ namespace LibraryAPI.API
                     return Results.Conflict("Couldn't create author");
                 }
                 return Results.Ok("Successfully created author");
-            }).Produces(StatusCodes.Status200OK)
+            }).WithTags("Author")
+              .Produces(StatusCodes.Status200OK)
               .ProducesValidationProblem(StatusCodes.Status400BadRequest)
               .Produces(StatusCodes.Status409Conflict);
 
-            webApplication.MapPut("/author/{id}", [Authorize(Policy = AuthorizationPolicies.AdminLibrarian)] async (int id, AuthorCreationDTO authorDto,
+            webApplication.MapPut("/author/{id}",
+            [SwaggerResponse(200, "Successfully updated author")]
+            [SwaggerResponse(400, "Invalid author information provided")]
+            [SwaggerResponse(404, "Author with provided id not found")]
+            [SwaggerResponse(409, "Unable to update author information")]
+            [SwaggerOperation(
+                    Summary = "Update specific author | [Authorized: Admin or Librarian]",
+                    Description = "Updates specific author information")]
+            [Authorize(Policy = AuthorizationPolicies.AdminLibrarian)] async (int id, AuthorCreationDTO authorDto,
                 IValidator<AuthorCreationDTO> validator, IAuthorService authorService) =>
             {
                 logger.LogInformation("Updating author with id: {authorId}, with information: {author}", id, JsonSerializer.Serialize(authorDto));
@@ -57,7 +74,7 @@ namespace LibraryAPI.API
                 if (author == null)
                 {
                     logger.LogWarning("Author not found with id: {authorId}", id);
-                    return Results.Conflict("Couldn't update author");
+                    return Results.NotFound("Author with provided id not found");
                 }
 
                 try
@@ -69,12 +86,20 @@ namespace LibraryAPI.API
                     logger.LogWarning(exception, "Couldn't update author: {author}", authorDto);
                     return Results.Conflict("Couldn't update author");
                 }
-                return Results.NoContent();
-            }).Produces(StatusCodes.Status204NoContent)
+                return Results.Ok("Successfully updated author");
+            }).WithTags("Author")
+              .Produces(StatusCodes.Status200OK)
               .ProducesValidationProblem(StatusCodes.Status400BadRequest)
+              .Produces(StatusCodes.Status404NotFound)
               .Produces(StatusCodes.Status409Conflict);
 
-            webApplication.MapGet("/author/{id}", [Authorize] async (int id, IAuthorService authorService) =>
+            webApplication.MapGet("/author/{id}",
+            [SwaggerResponse(200, "Returns author with information about their books")]
+            [SwaggerResponse(409, "Unable to retrieve author")]
+            [SwaggerOperation(
+                    Summary = "Get specific author | [Authorized]",
+                    Description = "Gets specific author with information about their books")]
+            [Authorize] async (int id, IAuthorService authorService) =>
             {
                 logger.LogInformation("Retrieving author with id: {authorId}", id);
 
@@ -91,11 +116,18 @@ namespace LibraryAPI.API
                 }
 
                 return Results.Ok(author);
-            })
+            }).WithTags("Author")
               .Produces<AuthorDTO>(StatusCodes.Status200OK)
               .Produces(StatusCodes.Status409Conflict);
 
-            webApplication.MapDelete("/author/{id}", [Authorize(Policy = AuthorizationPolicies.AdminLibrarian)] async (int id, IAuthorService authorService) =>
+            webApplication.MapDelete("/author/{id}",
+            [SwaggerResponse(200, "Successfully deleted author")]
+            [SwaggerResponse(404, "Author with provided id not found")]
+            [SwaggerResponse(409, "Unable to delete author")]
+            [SwaggerOperation(
+                    Summary = "Delete author | [Authorized: Admin or Librarian]",
+                    Description = "Delete author and remove them from their books")]
+            [Authorize(Policy = AuthorizationPolicies.AdminLibrarian)] async (int id, IAuthorService authorService) =>
             {
                 logger.LogInformation("Deleting author with id: {authorId}", id);
 
@@ -103,7 +135,7 @@ namespace LibraryAPI.API
                 if (author == null)
                 {
                     logger.LogWarning("Author not found with id: {authorId}", id);
-                    return Results.NoContent();
+                    return Results.NotFound("Author with provided id not found");
                 }
 
                 try
@@ -116,10 +148,37 @@ namespace LibraryAPI.API
                     return Results.Conflict("Couldn't delete author");
                 }
 
-                return Results.NoContent();
-            })
-              .Produces(StatusCodes.Status204NoContent)
+                return Results.Ok("Successfully deleted author");
+            }).WithTags("Author")
+              .Produces(StatusCodes.Status200OK)
+              .Produces(StatusCodes.Status404NotFound)
               .Produces(StatusCodes.Status409Conflict);
+
+            webApplication.MapGet("/author",
+            [SwaggerResponse(200, "Returns all authors with basic information about their books")]
+            [SwaggerResponse(409, "Unable to retrieve authors")]
+            [SwaggerOperation(
+                    Summary = "Get all authors | [Authorized]",
+                    Description = "Gets all authors with basic information about their books")]
+            [Authorize] async (IAuthorService authorService) =>
+            {
+                logger.LogInformation("Retrieving all authors");
+
+                List<AuthorDTO> authors = new();
+                try
+                {
+                    authors = authorService.GetAllAuthors();
+                }
+                catch (Exception exception)
+                {
+                    logger.LogWarning(exception, "Couldn't retrieve all authors");
+                    return Results.Conflict("Couldn't retrieve all authors");
+                }
+
+                return Results.Ok(authors);
+            }).WithTags("Author")
+             .Produces<List<AuthorDTO>>(StatusCodes.Status200OK)
+             .Produces(StatusCodes.Status409Conflict);
         }
     }
 }

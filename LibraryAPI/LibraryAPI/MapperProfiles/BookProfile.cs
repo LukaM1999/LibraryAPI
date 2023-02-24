@@ -6,8 +6,11 @@ namespace LibraryAPI.MapperProfiles
 {
     public class BookProfile : Profile
     {
-        public BookProfile() { 
+        public BookProfile()
+        {
             CreateMap<AuthorBookDTO, Book>().ReverseMap();
+            CreateMap<BookDTO, Book>().ReverseMap();
+            CreateMap<Book, BookCreationDTO>().ReverseMap();
         }
     }
 }
