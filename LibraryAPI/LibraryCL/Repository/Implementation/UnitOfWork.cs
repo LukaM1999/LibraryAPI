@@ -7,9 +7,11 @@ namespace LibraryCL.Repository.Implementation
     {
         private readonly DbContext _dbContext;
         private IGenericDbRepository<Author> _authorRepository;
+        private IGenericDbRepository<Book> _bookRepository;
 
 
-        public UnitOfWork(DbContext dbContext) { 
+        public UnitOfWork(DbContext dbContext)
+        {
             _dbContext = dbContext;
         }
 
@@ -24,6 +26,15 @@ namespace LibraryCL.Repository.Implementation
             {
                 this._authorRepository ??= new GenericDbRepository<Author>(_dbContext);
                 return _authorRepository;
+            }
+        }
+
+        public IGenericDbRepository<Book> BookRepository
+        {
+            get
+            {
+                this._bookRepository ??= new GenericDbRepository<Book>(_dbContext);
+                return _bookRepository;
             }
         }
 
