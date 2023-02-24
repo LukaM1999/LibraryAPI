@@ -176,7 +176,7 @@ namespace LibraryAPI.Services.Implementation
             return token;
         }
 
-        public async Task<UserDTO?> GetUserDTOByEmail(string email)
+        public async Task<UserDTO?> GetUserInformationByEmail(string email)
         {
             User user = await _userManager.FindByEmailAsync(email.ToUpper());
 

@@ -55,6 +55,7 @@
                 webApplication.MapPut("/book/{id}",
                 [SwaggerResponse(200, "Successfully updated book")]
                 [SwaggerResponse(400, "Invalid book information provided")]
+                [SwaggerResponse(404, "Book with provided id not found")]
                 [SwaggerResponse(409, "Unable to update book")]
                 [SwaggerOperation(
                         Summary = "Update specific book | [Authorized: Admin or Librarian]",
@@ -75,7 +76,7 @@
                     if (book == null)
                     {
                         logger.LogWarning("Book not found with id: {bookId}", id);
-                        return Results.Conflict("Couldn't update book");
+                        return Results.NotFound("Book with provided id not found");
                     }
 
                     try
@@ -91,6 +92,7 @@
                 }).WithTags("Book")
                   .Produces(StatusCodes.Status200OK)
                   .ProducesValidationProblem(StatusCodes.Status400BadRequest)
+                  .Produces(StatusCodes.Status404NotFound)
                   .Produces(StatusCodes.Status409Conflict);
 
                 webApplication.MapGet("/book/{id}",
@@ -122,6 +124,7 @@
 
                 webApplication.MapDelete("/book/{id}",
                 [SwaggerResponse(200, "Successfully deleted book")]
+                [SwaggerResponse(404, "Book with provided id not found")]
                 [SwaggerResponse(409, "Unable to delete book")]
                 [SwaggerOperation(
                         Summary = "Delete book | [Authorized: Admin or Librarian]",
@@ -134,7 +137,7 @@
                     if (book == null)
                     {
                         logger.LogWarning("Book not found with id: {bookId}", id);
-                        return Results.Ok("Successfully deleted book");
+                        return Results.NotFound("Book with provided id not found");
                     }
 
                     try
@@ -150,6 +153,7 @@
                     return Results.Ok("Successfully deleted book");
                 }).WithTags("Book")
                   .Produces(StatusCodes.Status200OK)
+                  .Produces(StatusCodes.Status404NotFound)
                   .Produces(StatusCodes.Status409Conflict);
 
                 webApplication.MapGet("/book",

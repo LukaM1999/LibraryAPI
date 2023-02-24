@@ -53,6 +53,7 @@ namespace LibraryAPI.API
             webApplication.MapPut("/author/{id}",
             [SwaggerResponse(200, "Successfully updated author")]
             [SwaggerResponse(400, "Invalid author information provided")]
+            [SwaggerResponse(404, "Author with provided id not found")]
             [SwaggerResponse(409, "Unable to update author information")]
             [SwaggerOperation(
                     Summary = "Update specific author | [Authorized: Admin or Librarian]",
@@ -73,7 +74,7 @@ namespace LibraryAPI.API
                 if (author == null)
                 {
                     logger.LogWarning("Author not found with id: {authorId}", id);
-                    return Results.Conflict("Couldn't update author");
+                    return Results.NotFound("Author with provided id not found");
                 }
 
                 try
@@ -89,6 +90,7 @@ namespace LibraryAPI.API
             }).WithTags("Author")
               .Produces(StatusCodes.Status200OK)
               .ProducesValidationProblem(StatusCodes.Status400BadRequest)
+              .Produces(StatusCodes.Status404NotFound)
               .Produces(StatusCodes.Status409Conflict);
 
             webApplication.MapGet("/author/{id}",
@@ -120,6 +122,7 @@ namespace LibraryAPI.API
 
             webApplication.MapDelete("/author/{id}",
             [SwaggerResponse(200, "Successfully deleted author")]
+            [SwaggerResponse(404, "Author with provided id not found")]
             [SwaggerResponse(409, "Unable to delete author")]
             [SwaggerOperation(
                     Summary = "Delete author | [Authorized: Admin or Librarian]",
@@ -132,7 +135,7 @@ namespace LibraryAPI.API
                 if (author == null)
                 {
                     logger.LogWarning("Author not found with id: {authorId}", id);
-                    return Results.Ok("Successfully deleted author");
+                    return Results.NotFound("Author with provided id not found");
                 }
 
                 try
@@ -148,6 +151,7 @@ namespace LibraryAPI.API
                 return Results.Ok("Successfully deleted author");
             }).WithTags("Author")
               .Produces(StatusCodes.Status200OK)
+              .Produces(StatusCodes.Status404NotFound)
               .Produces(StatusCodes.Status409Conflict);
 
             webApplication.MapGet("/author",

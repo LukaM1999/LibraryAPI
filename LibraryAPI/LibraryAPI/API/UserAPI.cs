@@ -339,7 +339,7 @@ namespace LibraryAPI.API
                     UserDTO? user;
                     try
                     {
-                        user = await userService.GetUserDTOByEmail(Uri.UnescapeDataString(email));
+                        user = await userService.GetUserInformationByEmail(Uri.UnescapeDataString(email));
                     }
                     catch (Exception exception)
                     {
