@@ -15,6 +15,10 @@ namespace LibraryCL
         {
         }
 
+        public DbSet<Book> Book { get; set; }
+
+        public DbSet<Author> Author { get; set; }
+
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             var entries = ChangeTracker

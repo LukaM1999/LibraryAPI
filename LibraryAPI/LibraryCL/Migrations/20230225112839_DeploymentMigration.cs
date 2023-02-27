@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace LibraryCL.Migrations
 {
-    public partial class UserIdentityRegistrationMigration : Migration
+    public partial class DeploymentMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -30,7 +30,6 @@ namespace LibraryCL.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Role = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     Avatar = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -52,6 +51,23 @@ namespace LibraryCL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Author",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Deleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Author", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -160,6 +176,79 @@ namespace LibraryCL.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Book",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                    AuthorId = table.Column<int>(type: "int", nullable: true),
+                    Deleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Book", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Book_Author_AuthorId",
+                        column: x => x.AuthorId,
+                        principalTable: "Author",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "2c5e174e-3b0e-446f-86af-483d56fd7210", "ba5ada46-e979-42d4-8b57-3846d6e96d45", "Admin", "ADMIN" },
+                    { "3b5e174e-3b0e-446f-86af-483d56fd7210", "0f54407c-41be-4e20-bbdf-5b5b1fd6fef1", "User", "USER" },
+                    { "4a5e174e-3b0e-446f-86af-483d56fd7210", "0b093435-bd75-4be8-a6b9-652b6e48e223", "Librarian", "LIBRARIAN" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "Avatar", "ConcurrencyStamp", "CreatedDate", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "ModifiedDate", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[,]
+                {
+                    { "2c6f174e-3b0e-446f-86af-483d56fd7210", 0, null, "d4084aae-ee7e-430d-a64b-6b2059195866", new DateTime(2023, 2, 25, 11, 28, 39, 358, DateTimeKind.Utc).AddTicks(5525), "admin@mail.com", false, null, null, false, null, new DateTime(2023, 2, 25, 11, 28, 39, 358, DateTimeKind.Utc).AddTicks(5525), "ADMIN@MAIL.COM", "ADMIN@MAIL.COM", "AQAAAAEAACcQAAAAEFlyaJD2fJ9czKDU2MiOOxMDs+jqPm64BEUR8dAYAYHcRAXq8fldBTkw8lNbnrRkrA==", null, false, "0df2c353-d436-4a7f-8066-2728756e7e64", false, "admin@mail.com" },
+                    { "3b7g174e-3b0e-446f-86af-483d56fd7210", 0, null, "1af07f55-af46-41cb-890d-b880f8707efd", new DateTime(2023, 2, 25, 11, 28, 39, 358, DateTimeKind.Utc).AddTicks(5534), "user@mail.com", false, null, null, false, null, new DateTime(2023, 2, 25, 11, 28, 39, 358, DateTimeKind.Utc).AddTicks(5534), null, null, null, null, false, "43cf46aa-db9b-4696-800d-573c08bfceac", false, "user@mail.com" },
+                    { "4a8h174e-3b0e-446f-86af-483d56fd7210", 0, null, "e2002f83-038f-400b-8039-b30d5ec95645", new DateTime(2023, 2, 25, 11, 28, 39, 358, DateTimeKind.Utc).AddTicks(5591), "librarian@mail.com", false, null, null, false, null, new DateTime(2023, 2, 25, 11, 28, 39, 358, DateTimeKind.Utc).AddTicks(5591), null, null, null, null, false, "ce084e93-8567-4f9b-9088-67940d7e31a0", false, "librarian@mail.com" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Author",
+                columns: new[] { "Id", "CreatedDate", "Deleted", "FirstName", "LastName", "ModifiedDate" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1129), false, "Tom", "Paice", new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1131) },
+                    { 2, new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1133), false, "Bob", "Vance", new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1133) },
+                    { 3, new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1135), false, "Nick", "Chapsas", new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1135) }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[,]
+                {
+                    { "2c5e174e-3b0e-446f-86af-483d56fd7210", "2c6f174e-3b0e-446f-86af-483d56fd7210" },
+                    { "3b5e174e-3b0e-446f-86af-483d56fd7210", "3b7g174e-3b0e-446f-86af-483d56fd7210" },
+                    { "4a5e174e-3b0e-446f-86af-483d56fd7210", "4a8h174e-3b0e-446f-86af-483d56fd7210" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Book",
+                columns: new[] { "Id", "AuthorId", "CreatedDate", "Deleted", "ModifiedDate", "Name" },
+                values: new object[,]
+                {
+                    { 1, 1, new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1249), false, new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1249), "Marvelous Tale of Time" },
+                    { 2, 1, new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1250), false, new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1250), "Marvelous Tale of Space" },
+                    { 3, 2, new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1251), false, new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1252), "Refrigeration 101" },
+                    { 4, 3, new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1252), true, new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1253), "Programming 101" }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -205,6 +294,11 @@ namespace LibraryCL.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Book_AuthorId",
+                table: "Book",
+                column: "AuthorId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -225,10 +319,16 @@ namespace LibraryCL.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Book");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Author");
         }
     }
 }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryCL.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
-    [Migration("20230222101817_NullableForeignKeyMigration")]
-    partial class NullableForeignKeyMigration
+    [Migration("20230225112839_DeploymentMigration")]
+    partial class DeploymentMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,7 +32,7 @@ namespace LibraryCL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<DateTime>("Created")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("Deleted")
@@ -59,29 +59,29 @@ namespace LibraryCL.Migrations
                         new
                         {
                             Id = 1,
-                            Created = new DateTime(2023, 2, 22, 10, 18, 17, 331, DateTimeKind.Utc).AddTicks(935),
+                            CreatedDate = new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1129),
                             Deleted = false,
                             FirstName = "Tom",
                             LastName = "Paice",
-                            ModifiedDate = new DateTime(2023, 2, 22, 10, 18, 17, 331, DateTimeKind.Utc).AddTicks(940)
+                            ModifiedDate = new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1131)
                         },
                         new
                         {
                             Id = 2,
-                            Created = new DateTime(2023, 2, 22, 10, 18, 17, 331, DateTimeKind.Utc).AddTicks(942),
+                            CreatedDate = new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1133),
                             Deleted = false,
                             FirstName = "Bob",
                             LastName = "Vance",
-                            ModifiedDate = new DateTime(2023, 2, 22, 10, 18, 17, 331, DateTimeKind.Utc).AddTicks(942)
+                            ModifiedDate = new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1133)
                         },
                         new
                         {
                             Id = 3,
-                            Created = new DateTime(2023, 2, 22, 10, 18, 17, 331, DateTimeKind.Utc).AddTicks(943),
+                            CreatedDate = new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1135),
                             Deleted = false,
                             FirstName = "Nick",
                             LastName = "Chapsas",
-                            ModifiedDate = new DateTime(2023, 2, 22, 10, 18, 17, 331, DateTimeKind.Utc).AddTicks(943)
+                            ModifiedDate = new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1135)
                         });
                 });
 
@@ -96,7 +96,7 @@ namespace LibraryCL.Migrations
                     b.Property<int?>("AuthorId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("Created")
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("Deleted")
@@ -121,36 +121,36 @@ namespace LibraryCL.Migrations
                         {
                             Id = 1,
                             AuthorId = 1,
-                            Created = new DateTime(2023, 2, 22, 10, 18, 17, 331, DateTimeKind.Utc).AddTicks(1040),
+                            CreatedDate = new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1249),
                             Deleted = false,
-                            ModifiedDate = new DateTime(2023, 2, 22, 10, 18, 17, 331, DateTimeKind.Utc).AddTicks(1041),
+                            ModifiedDate = new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1249),
                             Name = "Marvelous Tale of Time"
                         },
                         new
                         {
                             Id = 2,
                             AuthorId = 1,
-                            Created = new DateTime(2023, 2, 22, 10, 18, 17, 331, DateTimeKind.Utc).AddTicks(1042),
+                            CreatedDate = new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1250),
                             Deleted = false,
-                            ModifiedDate = new DateTime(2023, 2, 22, 10, 18, 17, 331, DateTimeKind.Utc).AddTicks(1043),
+                            ModifiedDate = new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1250),
                             Name = "Marvelous Tale of Space"
                         },
                         new
                         {
                             Id = 3,
                             AuthorId = 2,
-                            Created = new DateTime(2023, 2, 22, 10, 18, 17, 331, DateTimeKind.Utc).AddTicks(1043),
+                            CreatedDate = new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1251),
                             Deleted = false,
-                            ModifiedDate = new DateTime(2023, 2, 22, 10, 18, 17, 331, DateTimeKind.Utc).AddTicks(1044),
+                            ModifiedDate = new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1252),
                             Name = "Refrigeration 101"
                         },
                         new
                         {
                             Id = 4,
                             AuthorId = 3,
-                            Created = new DateTime(2023, 2, 22, 10, 18, 17, 331, DateTimeKind.Utc).AddTicks(1044),
+                            CreatedDate = new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1252),
                             Deleted = true,
-                            ModifiedDate = new DateTime(2023, 2, 22, 10, 18, 17, 331, DateTimeKind.Utc).AddTicks(1045),
+                            ModifiedDate = new DateTime(2023, 2, 25, 11, 28, 39, 361, DateTimeKind.Utc).AddTicks(1253),
                             Name = "Programming 101"
                         });
                 });
@@ -245,17 +245,17 @@ namespace LibraryCL.Migrations
                         {
                             Id = "2c6f174e-3b0e-446f-86af-483d56fd7210",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4e87d0e5-f459-4eb8-b43c-fdbe2fecb9e7",
-                            CreatedDate = new DateTime(2023, 2, 22, 10, 18, 17, 328, DateTimeKind.Utc).AddTicks(6394),
+                            ConcurrencyStamp = "d4084aae-ee7e-430d-a64b-6b2059195866",
+                            CreatedDate = new DateTime(2023, 2, 25, 11, 28, 39, 358, DateTimeKind.Utc).AddTicks(5525),
                             Email = "admin@mail.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
-                            ModifiedDate = new DateTime(2023, 2, 22, 10, 18, 17, 328, DateTimeKind.Utc).AddTicks(6394),
+                            ModifiedDate = new DateTime(2023, 2, 25, 11, 28, 39, 358, DateTimeKind.Utc).AddTicks(5525),
                             NormalizedEmail = "ADMIN@MAIL.COM",
                             NormalizedUserName = "ADMIN@MAIL.COM",
                             PasswordHash = "AQAAAAEAACcQAAAAEFlyaJD2fJ9czKDU2MiOOxMDs+jqPm64BEUR8dAYAYHcRAXq8fldBTkw8lNbnrRkrA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "980d0d93-a808-427d-b823-cbf341fc59a0",
+                            SecurityStamp = "0df2c353-d436-4a7f-8066-2728756e7e64",
                             TwoFactorEnabled = false,
                             UserName = "admin@mail.com"
                         },
@@ -263,14 +263,14 @@ namespace LibraryCL.Migrations
                         {
                             Id = "3b7g174e-3b0e-446f-86af-483d56fd7210",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "eeed4236-14b3-439d-baf3-6ab685104e45",
-                            CreatedDate = new DateTime(2023, 2, 22, 10, 18, 17, 328, DateTimeKind.Utc).AddTicks(6401),
+                            ConcurrencyStamp = "1af07f55-af46-41cb-890d-b880f8707efd",
+                            CreatedDate = new DateTime(2023, 2, 25, 11, 28, 39, 358, DateTimeKind.Utc).AddTicks(5534),
                             Email = "user@mail.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
-                            ModifiedDate = new DateTime(2023, 2, 22, 10, 18, 17, 328, DateTimeKind.Utc).AddTicks(6401),
+                            ModifiedDate = new DateTime(2023, 2, 25, 11, 28, 39, 358, DateTimeKind.Utc).AddTicks(5534),
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e9f1701a-dd6d-4514-9192-1c92f04b4c32",
+                            SecurityStamp = "43cf46aa-db9b-4696-800d-573c08bfceac",
                             TwoFactorEnabled = false,
                             UserName = "user@mail.com"
                         },
@@ -278,14 +278,14 @@ namespace LibraryCL.Migrations
                         {
                             Id = "4a8h174e-3b0e-446f-86af-483d56fd7210",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "ba41a7c1-6b7a-4b61-a895-baaf54f9c5d0",
-                            CreatedDate = new DateTime(2023, 2, 22, 10, 18, 17, 328, DateTimeKind.Utc).AddTicks(6417),
+                            ConcurrencyStamp = "e2002f83-038f-400b-8039-b30d5ec95645",
+                            CreatedDate = new DateTime(2023, 2, 25, 11, 28, 39, 358, DateTimeKind.Utc).AddTicks(5591),
                             Email = "librarian@mail.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
-                            ModifiedDate = new DateTime(2023, 2, 22, 10, 18, 17, 328, DateTimeKind.Utc).AddTicks(6417),
+                            ModifiedDate = new DateTime(2023, 2, 25, 11, 28, 39, 358, DateTimeKind.Utc).AddTicks(5591),
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "1f147c84-920c-4eb0-949c-fef1ab433c26",
+                            SecurityStamp = "ce084e93-8567-4f9b-9088-67940d7e31a0",
                             TwoFactorEnabled = false,
                             UserName = "librarian@mail.com"
                         });
@@ -321,21 +321,21 @@ namespace LibraryCL.Migrations
                         new
                         {
                             Id = "2c5e174e-3b0e-446f-86af-483d56fd7210",
-                            ConcurrencyStamp = "ac04957d-133f-4c2a-b547-b7d7e4cf922e",
+                            ConcurrencyStamp = "ba5ada46-e979-42d4-8b57-3846d6e96d45",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "3b5e174e-3b0e-446f-86af-483d56fd7210",
-                            ConcurrencyStamp = "6ba59a4b-9c2c-424a-bdf5-ef70480deae5",
+                            ConcurrencyStamp = "0f54407c-41be-4e20-bbdf-5b5b1fd6fef1",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
                             Id = "4a5e174e-3b0e-446f-86af-483d56fd7210",
-                            ConcurrencyStamp = "b6a01614-fb09-4249-94dd-603443fa1046",
+                            ConcurrencyStamp = "0b093435-bd75-4be8-a6b9-652b6e48e223",
                             Name = "Librarian",
                             NormalizedName = "LIBRARIAN"
                         });
