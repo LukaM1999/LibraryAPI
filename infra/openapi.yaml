@@ -1,0 +1,576 @@
+openapi: 3.0.1
+info:
+  title: LibraryAPI
+  version: '1.0'
+paths:
+  /author:
+    post:
+      tags:
+        - Author
+      summary: 'Create new author | [Authorized: Admin or Librarian]'
+      description: Creates a new author
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorCreationDTO'
+        required: true
+      responses:
+        '200':
+          description: Successfully created author
+        '400':
+          description: Invalid author information provided
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '409':
+          description: Unable to create author
+    get:
+      tags:
+        - Author
+      summary: 'Get all authors | [Authorized]'
+      description: Gets all authors with basic information about their books
+      responses:
+        '200':
+          description: Returns all authors with basic information about their books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuthorDTO'
+        '409':
+          description: Unable to retrieve authors
+  '/author/{id}':
+    put:
+      tags:
+        - Author
+      summary: 'Update specific author | [Authorized: Admin or Librarian]'
+      description: Updates specific author information
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthorCreationDTO'
+        required: true
+      responses:
+        '200':
+          description: Successfully updated author
+        '400':
+          description: Invalid author information provided
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Author with provided id not found
+        '409':
+          description: Unable to update author information
+    get:
+      tags:
+        - Author
+      summary: 'Get specific author | [Authorized]'
+      description: Gets specific author with information about their books
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Returns author with information about their books
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorDTO'
+        '409':
+          description: Unable to retrieve author
+    delete:
+      tags:
+        - Author
+      summary: 'Delete author | [Authorized: Admin or Librarian]'
+      description: Delete author and remove them from their books
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successfully deleted author
+        '404':
+          description: Author with provided id not found
+        '409':
+          description: Unable to delete author
+  /book:
+    post:
+      tags:
+        - Book
+      summary: 'Create new book | [Authorized: Admin or Librarian]'
+      description: 'Creates a new book, with optional author'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookCreationDTO'
+        required: true
+      responses:
+        '200':
+          description: Successfully created book
+        '400':
+          description: Invalid book information provided
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '409':
+          description: Unable to create book
+    get:
+      tags:
+        - Book
+      summary: 'Get all books | [Authorized]'
+      description: Gets all books with basic information about their author
+      responses:
+        '200':
+          description: Returns all books with basic information about their author
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookDTO'
+        '409':
+          description: Unable to retrieve books
+  '/book/{id}':
+    put:
+      tags:
+        - Book
+      summary: 'Update specific book | [Authorized: Admin or Librarian]'
+      description: 'Updates specific book information, with the author of the book'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookCreationDTO'
+        required: true
+      responses:
+        '200':
+          description: Successfully updated book
+        '400':
+          description: Invalid book information provided
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '404':
+          description: Book with provided id not found
+        '409':
+          description: Unable to update book
+    get:
+      tags:
+        - Book
+      summary: 'Get specific book | [Authorized]'
+      description: Gets specific book with information about their author
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Returns book with basic information about its author
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookDTO'
+        '409':
+          description: Unable to retrieve book
+    delete:
+      tags:
+        - Book
+      summary: 'Delete book | [Authorized: Admin or Librarian]'
+      description: Deletes book and removes them from their author's books
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successfully deleted book
+        '404':
+          description: Book with provided id not found
+        '409':
+          description: Unable to delete book
+  /user/register:
+    post:
+      tags:
+        - User
+      summary: 'Create new user | [Anonymous]'
+      description: Registers new user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistrationDTO'
+        required: true
+      responses:
+        '200':
+          description: User registered successfully
+        '400':
+          description: Invalid registration information
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '409':
+          description: User with provided email already exists
+  '/user/{userId}/upgradeToLibrarian':
+    put:
+      tags:
+        - User
+      summary: 'Upgrade user to librarian | [Authorized: Admin]'
+      description: Updates the role of user to Librarian
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User registered successfully
+        '409':
+          description: Unable to upgrade user to librarian
+  '/user/{userId}/downgradeToUser':
+    put:
+      tags:
+        - User
+      summary: 'Downgrade librarian to user | [Authorized: Admin]'
+      description: Updates the role of librarian to User
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User registered successfully
+        '409':
+          description: Unable to downgrade librarian to user
+  /user/basicInformation:
+    put:
+      tags:
+        - User
+      summary: 'Update basic user information | [Authorized]'
+      description: Updates basic signed in user information like first and last name
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserBasicDTO'
+        required: true
+      responses:
+        '200':
+          description: Basic user information updated successfully
+        '409':
+          description: Unable to update basic user information
+  /user/email:
+    put:
+      tags:
+        - User
+      summary: 'Update user email | [Authorized]'
+      description: Updates signed in user's email
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserEmailDTO'
+        required: true
+      responses:
+        '200':
+          description: User email successfully updated
+        '400':
+          description: Invalid user email provided
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/HttpValidationProblemDetails'
+        '409':
+          description: User with provided email already exists
+  /user/avatar:
+    put:
+      tags:
+        - User
+      summary: 'Updates user avatar | [Authorized]'
+      description: Updates signed in user's avatar
+      requestBody:
+        content:
+          'image/png,image/jpg':
+            schema:
+              type: string
+              format: binary
+        required: true
+      responses:
+        '200':
+          description: User avatar updated successfully
+        '409':
+          description: Unable to update user avatar
+    delete:
+      tags:
+        - User
+      summary: 'Deletes user avatar | [Authorized]'
+      description: Deletes signed in user's avatar
+      responses:
+        '200':
+          description: Successfully removed user avatar
+        '409':
+          description: Unable to remove user avatar
+    get:
+      tags:
+        - User
+      summary: 'Retrieve user avatar | [Authorized]'
+      description: Retrieves signed in user's avatar
+      responses:
+        '200':
+          description: Returns user avatar as .jpg image file
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IResult'
+        '409':
+          description: Unable to retrieve user avatar
+  /user/login:
+    post:
+      tags:
+        - User
+      summary: 'Sign in user | [Anonymous]'
+      description: Signs in user with provided credentials
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDTO'
+        required: true
+      responses:
+        '200':
+          description: Returns JWT and time until the token becomes invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginDTO'
+        '409':
+          description: Couldn't sign in user with provided credentials
+  '/user/{email}':
+    get:
+      tags:
+        - User
+      summary: 'Get user by email | [Anonymous]'
+      description: Gets user with provided email address
+      parameters:
+        - name: email
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns basic user information by their email
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+        '409':
+          description: Unable to retrieve basic user information by email
+components:
+  schemas:
+    AuthorBasicDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+      additionalProperties: false
+    AuthorBookDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+          nullable: true
+      additionalProperties: false
+    AuthorCreationDTO:
+      type: object
+      properties:
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+      additionalProperties: false
+    AuthorDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+        books:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuthorBookDTO'
+          nullable: true
+      additionalProperties: false
+    BookCreationDTO:
+      type: object
+      properties:
+        name:
+          type: string
+          nullable: true
+        authorId:
+          type: integer
+          format: int32
+          nullable: true
+      additionalProperties: false
+    BookDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+          nullable: true
+        author:
+          $ref: '#/components/schemas/AuthorBasicDTO'
+      additionalProperties: false
+    HttpValidationProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        status:
+          type: integer
+          format: int32
+          nullable: true
+        detail:
+          type: string
+          nullable: true
+        instance:
+          type: string
+          nullable: true
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          nullable: true
+          readOnly: true
+      additionalProperties: { }
+    IResult:
+      type: object
+      additionalProperties: false
+    LoginDTO:
+      required:
+        - email
+        - password
+      type: object
+      properties:
+        email:
+          minLength: 1
+          type: string
+        password:
+          minLength: 1
+          type: string
+      additionalProperties: false
+    UpdateUserBasicDTO:
+      type: object
+      properties:
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+      additionalProperties: false
+    UpdateUserEmailDTO:
+      type: object
+      properties:
+        email:
+          type: string
+          nullable: true
+      additionalProperties: false
+    UserDTO:
+      type: object
+      properties:
+        email:
+          type: string
+          nullable: true
+        firstName:
+          type: string
+          nullable: true
+        lastName:
+          type: string
+          nullable: true
+      additionalProperties: false
+    UserRegistrationDTO:
+      type: object
+      properties:
+        email:
+          type: string
+          nullable: true
+        password:
+          type: string
+          nullable: true
+      additionalProperties: false
+  securitySchemes:
+    Bearer:
+      type: http
+      description: Please enter a valid token
+      scheme: Bearer
+      bearerFormat: JWT
+security:
+  - Bearer: [ ]

@@ -54,7 +54,7 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddDbContext<LibraryDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+    options.UseSqlServer(builder.Configuration.GetConnectionString(builder.Environment.IsProduction() ? "ProductionConnection" : "DefaultConnection"),
     assembly => assembly.MigrationsAssembly(typeof(LibraryDbContext).Assembly.FullName)).UseLazyLoadingProxies();
 });
 
@@ -124,13 +124,20 @@ builder.Services.AddAuthorization(options =>
               policy.RequireRole(Roles.Admin, Roles.Librarian, Roles.User));
 });
 
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI();
+
+if (app.Environment.IsProduction())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseHealthChecks("/health");
+
+    await using var scope = app.Services.CreateAsyncScope();
+    using var db = scope.ServiceProvider.GetService<LibraryDbContext>();
+    if (db != null) await db.Database.MigrateAsync();
 }
 
 app.UseHttpsRedirection();
