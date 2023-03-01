@@ -160,9 +160,9 @@
                 [SwaggerResponse(200, "Returns all books with basic information about their author")]
                 [SwaggerResponse(409, "Unable to retrieve books")]
                 [SwaggerOperation(
-                    Summary = "Get all books | [Authorized]",
+                    Summary = "Get all books | [Anonymous]",
                     Description = "Gets all books with basic information about their author")]
-                [Authorize] async (IBookService bookService) =>
+                [AllowAnonymous] async (IBookService bookService) =>
                 {
                     logger.LogInformation("Retrieving all books");
 
