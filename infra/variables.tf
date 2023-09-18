@@ -16,3 +16,11 @@ variable "github_repo_name" {
 variable "github_branch" {
   default = "main"
 }
+variable "github_oauth_token" {
+  type      = string
+  sensitive = true
+}
+variable "jwt_secret" {
+  type      = string
+  sensitive = true
+}

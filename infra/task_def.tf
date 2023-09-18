@@ -13,12 +13,12 @@ resource "aws_ecs_task_definition" "this" {
       "portMappings" : [
         { containerPort = 80 }
       ],
-       "environment": [
+      "environment" : [
         { name = "ASPNETCORE_ENVIRONMENT", value = "Production" },
         { name = "ConnectionStrings__ProductionConnection", value = "Server=${replace(aws_db_instance.this.endpoint, ":", ",")};Database=LibraryDB;User ID=my_db_username;Password=my_db_password" },
         { name = "JWT__ValidAudience", value = "${aws_apigatewayv2_api.this.api_endpoint}" },
         { name = "JWT__ValidIssuer", value = "${aws_lb.this.dns_name}" },
-        { name = "JWT__Secret", value = "6D6742211F45D6E52C058918B5CE91A0EC403C11D2163E40DA8C8B8C7247BCDF" }
+        { name = "JWT__Secret", value = "${var.jwt_secret}" }
       ],
       "logConfiguration" : {
         "logDriver" : "awslogs",

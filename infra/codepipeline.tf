@@ -10,14 +10,15 @@ resource "aws_codepipeline" "this" {
     action {
       name             = "Source"
       category         = "Source"
-      owner            = "AWS"
-      provider         = "CodeStarSourceConnection"
+      owner            = "ThirdParty"
+      provider         = "GitHub"
       version          = "1"
       output_artifacts = ["source_output"]
       configuration = {
-        ConnectionArn    = aws_codestarconnections_connection.this.arn
-        FullRepositoryId = "${var.github_repo_owner}/${var.github_repo_name}"
-        BranchName       = var.github_branch
+        Owner      = var.github_repo_owner
+        Repo       = var.github_repo_name
+        Branch     = var.github_branch
+        OAuthToken = var.github_oauth_token
       }
     }
   }
@@ -37,19 +38,22 @@ resource "aws_codepipeline" "this" {
     }
   }
 }
-resource "aws_codestarconnections_connection" "this" {
-  name          = "library_api_connection"
-  provider_type = "GitHub"
-}
 resource "aws_s3_bucket" "this" {
   bucket = "library-api-codepipeline-bucket"
 }
 resource "aws_s3_bucket_acl" "this" {
+  bucket     = aws_s3_bucket.this.id
+  acl        = "private"
+  depends_on = [aws_s3_bucket_ownership_controls.this]
+}
+resource "aws_s3_bucket_ownership_controls" "this" {
   bucket = aws_s3_bucket.this.id
-  acl    = "private"
+  rule {
+    object_ownership = "ObjectWriter"
+  }
 }
 resource "aws_iam_role" "codepipeline_role" {
-  name = "library_api_codepipeline_role"
+  name               = "library_api_codepipeline_role"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -67,8 +71,8 @@ resource "aws_iam_role" "codepipeline_role" {
 EOF
 }
 resource "aws_iam_role_policy" "codepipeline_policy" {
-  name = "library_api_codepipeline_policy"
-  role = aws_iam_role.codepipeline_role.id
+  name   = "library_api_codepipeline_policy"
+  role   = aws_iam_role.codepipeline_role.id
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -89,13 +93,6 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
         "${aws_s3_bucket.this.arn}/*",
         "*"
       ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "codestar-connections:UseConnection"
-      ],
-      "Resource": "${aws_codestarconnections_connection.this.arn}"
     },
     {
       "Effect": "Allow",
@@ -145,7 +142,7 @@ resource "aws_codebuild_project" "this" {
       value = var.image_repo_name
     }
     environment_variable {
-      name = "PROJECT_NAME"
+      name  = "PROJECT_NAME"
       value = var.project_name
     }
     environment_variable {
@@ -172,7 +169,7 @@ resource "aws_codebuild_project" "this" {
   }
 }
 resource "aws_iam_role" "codebuild_role" {
-  name = "library_api_codebuild_role"
+  name               = "library_api_codebuild_role"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -190,8 +187,8 @@ resource "aws_iam_role" "codebuild_role" {
 EOF
 }
 resource "aws_iam_role_policy" "codebuild_policy" {
-  name = "library_api_codebuild_policy"
-  role = aws_iam_role.codebuild_role.id
+  name   = "library_api_codebuild_policy"
+  role   = aws_iam_role.codebuild_role.id
   policy = <<EOF
 {
   "Version": "2012-10-17",
